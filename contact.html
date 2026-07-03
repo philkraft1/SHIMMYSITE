@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Contact — Rosenfeld Ranch</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Nunito:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="wrap header-inner">
+        <a class="logo" href="index.html">
+          <span class="logo-mark" aria-hidden="true">R</span>
+          <span class="logo-text">
+            Rosenfeld Ranch
+            <span>Est. 2024 · Lakewood, NJ</span>
+          </span>
+        </a>
+        <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false">☰</button>
+        <nav class="nav" aria-label="Main">
+          <a href="index.html">Home</a>
+          <a href="visit.html">Visit</a>
+          <a href="tickets.html">Tickets</a>
+          <a href="village.html">The Village</a>
+          <a href="events.html">Events</a>
+          <a href="contact.html" aria-current="page">Contact</a>
+          <span class="nav-cta">
+            <a class="btn btn-primary" href="tel:9293262188">Call now</a>
+          </span>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="page-hero">
+        <div class="wrap">
+          <p class="eyebrow">Get in touch</p>
+          <h1>Contact Rosenfeld Ranch</h1>
+          <p class="lead">
+            Questions about visits, The Village, or parties? Call or follow our
+            WhatsApp status for the latest updates.
+          </p>
+        </div>
+      </section>
+
+      <section class="section section--tight">
+        <div class="wrap split">
+          <div class="info-panel">
+            <dl>
+              <div>
+                <dt>Phone</dt>
+                <dd>
+                  <a href="tel:9293262188">(929) 326-2188</a>
+                </dd>
+              </div>
+              <div>
+                <dt>WhatsApp</dt>
+                <dd>Follow our WhatsApp status for updates</dd>
+              </div>
+              <div>
+                <dt>Ranch entrance</dt>
+                <dd>184 Kent Rd</dd>
+              </div>
+              <div>
+                <dt>Address</dt>
+                <dd>
+                  1368 River Ave<br />
+                  Lakewood, NJ
+                </dd>
+              </div>
+              <div>
+                <dt>Online payments</dt>
+                <dd>Square checkout linking Sunday</dd>
+              </div>
+            </dl>
+            <div class="btn-row">
+              <a class="btn btn-primary" href="tel:9293262188">Call (929) 326-2188</a>
+              <a class="btn btn-secondary" href="https://wa.me/19293262188" target="_blank" rel="noopener">WhatsApp</a>
+            </div>
+          </div>
+
+          <form class="form-card" action="#" method="post" onsubmit="return false;">
+            <h3 style="margin-bottom: 1rem">Send a message</h3>
+            <div class="form-row">
+              <label for="name">Name</label>
+              <input id="name" name="name" type="text" placeholder="Your name" />
+            </div>
+            <div class="form-row">
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" placeholder="you@email.com" />
+            </div>
+            <div class="form-row">
+              <label for="topic">Topic</label>
+              <select id="topic" name="topic">
+                <option>General question</option>
+                <option>Day visit</option>
+                <option>The Village / puppies</option>
+                <option>Birthday or private event</option>
+                <option>Animals for sale</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="message">Message</label>
+              <textarea id="message" name="message" placeholder="How can we help?"></textarea>
+            </div>
+            <button class="btn btn-primary is-disabled" type="submit">Send (coming soon)</button>
+            <p style="margin-top: 0.75rem; font-size: 0.88rem; color: var(--ink-soft)">
+              Form wiring comes with the Sunday pass. Phone is the fastest route today.
+            </p>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap">
+        <div class="footer-grid">
+          <div>
+            <a class="logo" href="index.html">
+              <span class="logo-mark" aria-hidden="true">R</span>
+              <span class="logo-text">
+                Rosenfeld Ranch
+                <span>Est. 2024</span>
+              </span>
+            </a>
+            <p style="margin-top: 1rem; max-width: 22rem">
+              Follow our WhatsApp status for updates.
+            </p>
+          </div>
+          <div>
+            <h4>Explore</h4>
+            <ul>
+              <li><a href="visit.html">Visit</a></li>
+              <li><a href="tickets.html">Tickets</a></li>
+              <li><a href="village.html">The Village</a></li>
+              <li><a href="events.html">Events</a></li>
+              <li><a href="contact.html">Contact</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4>Find us</h4>
+            <ul>
+              <li>184 Kent Rd</li>
+              <li>1368 River Ave, Lakewood, NJ</li>
+              <li><a href="tel:9293262188">(929) 326-2188</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <span>© <span id="year"></span> Rosenfeld Ranch</span>
+          <span>Sample site — Square linking Sunday</span>
+        </div>
+      </div>
+    </footer>
+
+    <script src="nav.js"></script>
+    <script>
+      document.getElementById("year").textContent = new Date().getFullYear();
+    </script>
+  </body>
+</html>

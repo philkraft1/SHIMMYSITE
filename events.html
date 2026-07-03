@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Events — Rosenfeld Ranch</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Nunito:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="wrap header-inner">
+        <a class="logo" href="index.html">
+          <span class="logo-mark" aria-hidden="true">R</span>
+          <span class="logo-text">
+            Rosenfeld Ranch
+            <span>Est. 2024 · Lakewood, NJ</span>
+          </span>
+        </a>
+        <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false">☰</button>
+        <nav class="nav" aria-label="Main">
+          <a href="index.html">Home</a>
+          <a href="visit.html">Visit</a>
+          <a href="tickets.html">Tickets</a>
+          <a href="village.html">The Village</a>
+          <a href="events.html" aria-current="page">Events</a>
+          <a href="contact.html">Contact</a>
+          <span class="nav-cta">
+            <a class="btn btn-primary" href="tel:9293262188">Call to book</a>
+          </span>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="page-hero">
+        <div class="wrap">
+          <p class="eyebrow">Private events &amp; parties</p>
+          <h1>Celebrate at the ranch</h1>
+          <p class="lead">
+            Birthdays, groups, and private gatherings. Package pricing, deposits,
+            and online booking land Sunday when we connect Square and he shares
+            the event menu.
+          </p>
+          <p class="note">Event pricing &amp; booking — Sunday</p>
+        </div>
+      </section>
+
+      <section class="section section--tight">
+        <div class="wrap">
+          <div class="card-grid">
+            <article class="card">
+              <div class="card-icon" aria-hidden="true">🎂</div>
+              <h3>Birthday parties</h3>
+              <p>
+                Package details coming soon. Call
+                <a href="tel:9293262188">(929) 326-2188</a> to ask about
+                availability in the meantime.
+              </p>
+            </article>
+            <article class="card">
+              <div class="card-icon" aria-hidden="true">🚌</div>
+              <h3>Groups &amp; schools</h3>
+              <p>
+                Group rates and field-trip options will be listed here with
+                online deposits after Sunday’s setup.
+              </p>
+            </article>
+            <article class="card">
+              <div class="card-icon" aria-hidden="true">💳</div>
+              <h3>Pay the deposit online</h3>
+              <p>
+                Same Square account as day-of sales — hold your date with a
+                deposit, balance on-site or by link.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section--sage">
+        <div class="wrap" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start">
+          <div>
+            <p class="eyebrow">Coming Sunday</p>
+            <h2>What we’ll add next</h2>
+            <ul class="checklist">
+              <li>Official event package names &amp; prices</li>
+              <li>Deposit amounts</li>
+              <li>Booking / request form that notifies him</li>
+              <li>Square checkout for deposits</li>
+              <li>More photos of party setups &amp; spaces</li>
+            </ul>
+          </div>
+          <form class="form-card" action="#" method="post" onsubmit="return false;">
+            <h3 style="margin-bottom: 1rem">Interest form (preview)</h3>
+            <div class="form-row">
+              <label for="name">Name</label>
+              <input id="name" name="name" type="text" placeholder="Your name" />
+            </div>
+            <div class="form-grid-2">
+              <div class="form-row">
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" placeholder="you@email.com" />
+              </div>
+              <div class="form-row">
+                <label for="phone">Phone</label>
+                <input id="phone" name="phone" type="tel" placeholder="(555) 555-5555" />
+              </div>
+            </div>
+            <div class="form-row">
+              <label for="date">Preferred date</label>
+              <input id="date" name="date" type="date" />
+            </div>
+            <div class="form-row">
+              <label for="notes">Tell us about your event</label>
+              <textarea id="notes" name="notes" placeholder="Birthday age, guest count, questions…"></textarea>
+            </div>
+            <button class="btn btn-primary is-disabled" type="submit">Submit (activates Sunday)</button>
+            <p style="margin-top: 0.75rem; font-size: 0.88rem; color: var(--ink-soft)">
+              For now, call or WhatsApp
+              <a href="tel:9293262188">(929) 326-2188</a>.
+            </p>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap">
+        <div class="footer-grid">
+          <div>
+            <a class="logo" href="index.html">
+              <span class="logo-mark" aria-hidden="true">R</span>
+              <span class="logo-text">
+                Rosenfeld Ranch
+                <span>Est. 2024</span>
+              </span>
+            </a>
+            <p style="margin-top: 1rem; max-width: 22rem">
+              Follow our WhatsApp status for updates.
+            </p>
+          </div>
+          <div>
+            <h4>Explore</h4>
+            <ul>
+              <li><a href="visit.html">Visit</a></li>
+              <li><a href="tickets.html">Tickets</a></li>
+              <li><a href="village.html">The Village</a></li>
+              <li><a href="events.html">Events</a></li>
+              <li><a href="contact.html">Contact</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4>Find us</h4>
+            <ul>
+              <li>184 Kent Rd</li>
+              <li>1368 River Ave, Lakewood, NJ</li>
+              <li><a href="tel:9293262188">(929) 326-2188</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <span>© <span id="year"></span> Rosenfeld Ranch</span>
+          <span>Sample site — Square linking Sunday</span>
+        </div>
+      </div>
+    </footer>
+
+    <script src="nav.js"></script>
+    <script>
+      document.getElementById("year").textContent = new Date().getFullYear();
+    </script>
+    <style>
+      @media (max-width: 900px) {
+        .section--sage .wrap {
+          grid-template-columns: 1fr !important;
+        }
+      }
+    </style>
+  </body>
+</html>
