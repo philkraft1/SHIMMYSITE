@@ -19,7 +19,7 @@
           <span class="logo-mark" aria-hidden="true">R</span>
           <span class="logo-text">
             Rosenfeld Ranch
-            <span>Est. 2024 · Lakewood, NJ</span>
+            <span>Est. 2024 · Howell, NJ</span>
           </span>
         </a>
         <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false">☰</button>
@@ -67,7 +67,7 @@
                 $20 <span style="font-family: var(--font-body); font-size: 1rem; font-weight: 700; color: var(--ink-soft)">/ person · 20 minutes</span>
               </p>
               <div class="btn-row">
-                <button class="btn btn-primary is-disabled" type="button">Book online Sunday</button>
+                <button class="btn btn-primary is-disabled" type="button" data-square-item="puppies" data-square-label="Book online">Book online</button>
                 <a class="btn btn-secondary" href="tel:9293262188">Call to reserve</a>
               </div>
             </div>
@@ -90,13 +90,16 @@
             <article class="card">
               <div class="card-icon" aria-hidden="true">🏠</div>
               <h3>Indoor &amp; cozy</h3>
-              <p>A relaxing space — great when you want a break from the pens.</p>
+              <p>
+                A relaxing space — great when you want a break from the pens.
+                Find The Village at 1368 River Ave, Lakewood, NJ.
+              </p>
             </article>
             <article class="card">
               <div class="card-icon" aria-hidden="true">📞</div>
-              <h3>Reserve by phone for now</h3>
+              <h3>Book online or by phone</h3>
               <p>
-                Online booking arrives with Square on Sunday. Until then call
+                Book puppy time online with Square, or call
                 <a href="tel:9293262188">(929) 326-2188</a>.
               </p>
             </article>
@@ -133,19 +136,21 @@
           <div>
             <h4>Find us</h4>
             <ul>
-              <li>184 Kent Rd</li>
-              <li>1368 River Ave, Lakewood, NJ</li>
+              <li>Ranch: 184 Kent Rd, Howell, NJ 07731</li>
+              <li>The Village: 1368 River Ave, Lakewood, NJ</li>
               <li><a href="tel:9293262188">(929) 326-2188</a></li>
             </ul>
           </div>
         </div>
         <div class="footer-bottom">
           <span>© <span id="year"></span> Rosenfeld Ranch</span>
-          <span>Sample site — Square linking Sunday</span>
+          <span>Online checkout powered by Square</span>
         </div>
       </div>
     </footer>
 
+    <script src="square.config.js"></script>
+    <script src="square-checkout.js"></script>
     <script src="nav.js"></script>
     <script>
       document.getElementById("year").textContent = new Date().getFullYear();

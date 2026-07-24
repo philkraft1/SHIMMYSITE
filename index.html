@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Rosenfeld Ranch | Lakewood, NJ</title>
+    <title>Rosenfeld Ranch | Howell, NJ</title>
     <meta
       name="description"
-      content="Rosenfeld Ranch — petting farm, pony & wagon rides, The Village puppy experience, snacks & farm goods in Lakewood, NJ."
+      content="Rosenfeld Ranch — petting farm, pony & wagon rides, The Village puppy experience, snacks & farm goods in Howell, NJ."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -23,7 +23,7 @@
           <span class="logo-mark" aria-hidden="true">R</span>
           <span class="logo-text">
             Rosenfeld Ranch
-            <span>Est. 2024 · Lakewood, NJ</span>
+            <span>Est. 2024 · Howell, NJ</span>
           </span>
         </a>
         <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false">☰</button>
@@ -48,7 +48,7 @@
             <p class="eyebrow">Petting farm · Rides · Puppies</p>
             <h1>Welcome to Rosenfeld Ranch</h1>
             <p class="lead">
-              A hands-on ranch experience in Lakewood — meet the animals, hop on
+              A hands-on ranch experience in Howell — meet the animals, hop on
               a pony or wagon ride, cuddle puppies at The Village, and take home
               farm-fresh goods.
             </p>
@@ -56,7 +56,7 @@
               <a class="btn btn-primary" href="tickets.html">Admission &amp; prices</a>
               <a class="btn btn-secondary" href="village.html">The Village</a>
             </div>
-            <p class="note">Sample site — Square checkout links Sunday</p>
+            <p class="note" data-square-status>Pay online with Square — same account as the ranch register</p>
             <div class="hero-meta">
               <div class="meta-item">
                 <strong>$15 admission</strong>
@@ -175,10 +175,10 @@
           <p class="eyebrow">Private events</p>
           <h2>Parties &amp; group bookings</h2>
           <p class="lead">
-            Event packages, deposits, and online booking are coming next —
-            we’re linking Square on Sunday and adding his event pricing then.
+            Birthdays, groups, and private gatherings at the ranch — call or
+            WhatsApp to plan yours and hold your date.
           </p>
-          <p class="note note--dark">Placeholder until Sunday’s walkthrough</p>
+          <p class="note note--dark">Deposits payable online with Square</p>
           <div class="btn-row">
             <a class="btn btn-light" href="events.html">Event details</a>
             <a class="btn btn-ghost" href="tel:9293262188">Call (929) 326-2188</a>
@@ -216,19 +216,21 @@
           <div>
             <h4>Find us</h4>
             <ul>
-              <li>184 Kent Rd</li>
-              <li>1368 River Ave, Lakewood, NJ</li>
+              <li>Ranch: 184 Kent Rd, Howell, NJ 07731</li>
+              <li>The Village: 1368 River Ave, Lakewood, NJ</li>
               <li><a href="tel:9293262188">(929) 326-2188</a></li>
             </ul>
           </div>
         </div>
         <div class="footer-bottom">
           <span>© <span id="year"></span> Rosenfeld Ranch</span>
-          <span>Sample site — Square linking Sunday</span>
+          <span data-square-status>Online checkout powered by Square</span>
         </div>
       </div>
     </footer>
 
+    <script src="square.config.js"></script>
+    <script src="square-checkout.js"></script>
     <script src="nav.js"></script>
     <script>
       document.getElementById("year").textContent = new Date().getFullYear();

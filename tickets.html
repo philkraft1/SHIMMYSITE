@@ -19,7 +19,7 @@
           <span class="logo-mark" aria-hidden="true">R</span>
           <span class="logo-text">
             Rosenfeld Ranch
-            <span>Est. 2024 · Lakewood, NJ</span>
+            <span>Est. 2024 · Howell, NJ</span>
           </span>
         </a>
         <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false">☰</button>
@@ -31,7 +31,7 @@
           <a href="events.html">Events</a>
           <a href="contact.html">Contact</a>
           <span class="nav-cta">
-            <a class="btn btn-primary is-disabled" href="#">Pay online soon</a>
+            <a class="btn btn-primary is-disabled" href="#" data-square-nav data-square-label="Pay online">Pay online</a>
           </span>
         </nav>
       </div>
@@ -43,10 +43,10 @@
           <p class="eyebrow">From the ranch price boards</p>
           <h1>Tickets, rides &amp; extras</h1>
           <p class="lead">
-            Real prices from on-site signage. Online checkout with his Square
-            account goes live Sunday — buttons are ready for that link-up.
+            Real prices from on-site signage. Pay online now with Square — the
+            same account as the ranch register.
           </p>
-          <p class="note">Pay online — connecting Square on Sunday</p>
+          <p class="note" data-square-status>Pay online with Square — same account as the ranch register</p>
         </div>
       </section>
 
@@ -62,40 +62,40 @@
               <h3>Admission</h3>
               <p class="price">$15 <small>/ person</small></p>
               <p>Under 2 is free.</p>
-              <button class="btn btn-primary is-disabled" type="button">Checkout Sunday</button>
+              <button class="btn btn-primary is-disabled" type="button" data-square-item="admission" data-square-label="Pay admission">Pay online</button>
             </article>
             <article class="price-card">
               <span class="tag tag--warn">Fri &amp; Sun only</span>
               <h3>Wagon rides</h3>
               <p class="price">$10 <small>/ person</small></p>
               <p>Rides available Friday and Sunday only.</p>
-              <button class="btn btn-primary is-disabled" type="button">Checkout Sunday</button>
+              <button class="btn btn-primary is-disabled" type="button" data-square-item="wagon" data-square-label="Pay for wagon ride">Pay online</button>
             </article>
             <article class="price-card">
               <span class="tag tag--warn">Fri &amp; Sun only</span>
               <h3>Pony rides</h3>
               <p class="price">$10 <small>/ person</small></p>
               <p>Ages 5 and up. Friday and Sunday only.</p>
-              <button class="btn btn-primary is-disabled" type="button">Checkout Sunday</button>
+              <button class="btn btn-primary is-disabled" type="button" data-square-item="pony" data-square-label="Pay for pony ride">Pay online</button>
             </article>
             <article class="price-card" id="puppies">
               <span class="tag">The Village</span>
               <h3>Puppies</h3>
               <p class="price">$20 <small>/ person</small></p>
               <p>20 minutes to play, cuddle &amp; bond.</p>
-              <button class="btn btn-primary is-disabled" type="button">Checkout Sunday</button>
+              <button class="btn btn-primary is-disabled" type="button" data-square-item="puppies" data-square-label="Book puppies">Pay online</button>
             </article>
             <article class="price-card">
               <h3>Lettuce</h3>
               <p class="price">$5 <small>/ stalk</small></p>
               <p>Feed for the animals.</p>
-              <button class="btn btn-primary is-disabled" type="button">Checkout Sunday</button>
+              <button class="btn btn-primary is-disabled" type="button" data-square-item="lettuce" data-square-label="Buy lettuce">Pay online</button>
             </article>
             <article class="price-card">
               <h3>Grain / corn</h3>
               <p class="price">$10 <small>/ container</small></p>
               <p>Feed for the animals.</p>
-              <button class="btn btn-primary is-disabled" type="button">Checkout Sunday</button>
+              <button class="btn btn-primary is-disabled" type="button" data-square-item="grain" data-square-label="Buy grain / corn">Pay online</button>
             </article>
           </div>
         </div>
@@ -163,14 +163,13 @@
             <p class="eyebrow">Same Square, online too</p>
             <h2>Paying on the site</h2>
             <p class="lead">
-              On Sunday we’ll connect his Square account so guests can pay for
-              admission, rides, puppies, and add-ons online — same system as the
-              register.
+              Guests can pay for admission, rides, puppies, and add-ons online
+              through Square — the same system as the register.
             </p>
             <ul class="checklist">
               <li>Prices above match the ranch boards</li>
-              <li>Checkout buttons activate after Square link-up</li>
-              <li>Event packages &amp; booking added when he shares them</li>
+              <li>Checkout opens in a secure Square page</li>
+              <li>For event packages, call <a href="tel:9293262188">(929) 326-2188</a></li>
             </ul>
             <div class="btn-row">
               <a class="btn btn-secondary" href="tel:9293262188">Call (929) 326-2188</a>
@@ -208,19 +207,21 @@
           <div>
             <h4>Find us</h4>
             <ul>
-              <li>184 Kent Rd</li>
-              <li>1368 River Ave, Lakewood, NJ</li>
+              <li>Ranch: 184 Kent Rd, Howell, NJ 07731</li>
+              <li>The Village: 1368 River Ave, Lakewood, NJ</li>
               <li><a href="tel:9293262188">(929) 326-2188</a></li>
             </ul>
           </div>
         </div>
         <div class="footer-bottom">
           <span>© <span id="year"></span> Rosenfeld Ranch</span>
-          <span>Sample site — Square linking Sunday</span>
+          <span data-square-status>Online checkout powered by Square</span>
         </div>
       </div>
     </footer>
 
+    <script src="square.config.js"></script>
+    <script src="square-checkout.js"></script>
     <script src="nav.js"></script>
     <script>
       document.getElementById("year").textContent = new Date().getFullYear();
