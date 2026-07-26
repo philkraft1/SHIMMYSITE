@@ -770,6 +770,21 @@ a.btn.is-disabled {
   margin-bottom: 0.7rem;
 }
 
+.page-hero-media {
+  margin: 1.5rem 0 1.25rem;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  background: var(--cream-dark);
+}
+
+.page-hero-media img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+}
+
 /* CTA */
 .cta-band {
   text-align: center;
