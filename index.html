@@ -40,5 +40,71 @@
         <a href="events.html">Events &amp; Traveling Ranch</a>
       </p>
     </main>
+
+    <div
+      id="newsletter-dialog"
+      class="newsletter"
+      hidden
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="newsletter-title"
+    >
+      <button
+        class="newsletter-backdrop"
+        type="button"
+        data-newsletter-close
+        aria-label="Close newsletter signup"
+      ></button>
+      <div class="newsletter-panel">
+        <button class="newsletter-close" type="button" data-newsletter-close aria-label="Close">
+          ×
+        </button>
+        <div class="newsletter-visual">
+          <img
+            src="images/open-year-round.png"
+            alt=""
+            width="640"
+            height="360"
+          />
+        </div>
+        <div class="newsletter-body">
+          <img
+            class="newsletter-mark"
+            src="images/logo-r.png"
+            alt=""
+            width="48"
+            height="48"
+          />
+          <p class="eyebrow">The ranch list</p>
+          <h2 id="newsletter-title">Don’t miss a day on the ranch</h2>
+          <p class="newsletter-lead">
+            Get Village hours, event dates, photo-shoot openings, and farm
+            updates — a few notes a month, nothing noisy.
+          </p>
+          <form id="newsletter-form" class="newsletter-form" novalidate>
+            <label class="visually-hidden" for="newsletter-email">Email</label>
+            <div class="newsletter-row">
+              <input
+                id="newsletter-email"
+                name="email"
+                type="email"
+                required
+                autocomplete="email"
+                placeholder="you@email.com"
+              />
+              <button class="btn btn-primary" type="submit">Join the list</button>
+            </div>
+            <p class="newsletter-fine">
+              Free to join. Unsubscribe anytime.
+            </p>
+          </form>
+          <p id="newsletter-success" class="newsletter-success" hidden>
+            You’re on the list — see you at the ranch.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script src="newsletter.js"></script>
   </body>
 </html>
