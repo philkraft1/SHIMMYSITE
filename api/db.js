@@ -41,6 +41,22 @@ async function initDb() {
         source TEXT,
         created_at TIMESTAMPTZ NOT NULL
       );
+
+      CREATE TABLE IF NOT EXISTS bookings (
+        id SERIAL PRIMARY KEY,
+        booking_date DATE NOT NULL,
+        booking_time TEXT,
+        service TEXT NOT NULL,
+        name TEXT NOT NULL,
+        email TEXT NOT NULL,
+        phone TEXT,
+        guests INTEGER,
+        notes TEXT,
+        status TEXT NOT NULL DEFAULT 'requested',
+        created_at TIMESTAMPTZ NOT NULL
+      );
+
+      CREATE INDEX IF NOT EXISTS bookings_date_idx ON bookings (booking_date);
     `);
     return { driver: "postgres" };
   }
@@ -69,6 +85,20 @@ async function initDb() {
       source TEXT,
       created_at TEXT NOT NULL,
       FOREIGN KEY (customer_id) REFERENCES customers(id)
+    );
+
+    CREATE TABLE IF NOT EXISTS bookings (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      booking_date TEXT NOT NULL,
+      booking_time TEXT,
+      service TEXT NOT NULL,
+      name TEXT NOT NULL,
+      email TEXT NOT NULL,
+      phone TEXT,
+      guests INTEGER,
+      notes TEXT,
+      status TEXT NOT NULL DEFAULT 'requested',
+      created_at TEXT NOT NULL
     );
   `);
   return { driver: "sqlite", dbPath };
@@ -194,10 +224,137 @@ function getDbInfo() {
   };
 }
 
+const ALLOWED_SERVICES = new Set([
+  "ranch-visit",
+  "village-puppies",
+  "birthday-party",
+  "traveling-ranch",
+  "photo-shoot",
+  "other",
+]);
+
+function isValidDateString(value) {
+  return /^\d{4}-\d{2}-\d{2}$/.test(String(value || ""));
+}
+
+async function createBooking(input) {
+  const bookingDate = String(input.bookingDate || "").trim();
+  const service = String(input.service || "").trim();
+  const name = String(input.name || "").trim();
+  const email = normalizeEmail(input.email);
+  const phone = String(input.phone || "").trim();
+  const notes = String(input.notes || "").trim();
+  const bookingTime = String(input.bookingTime || "").trim();
+  const guests = Number(input.guests);
+
+  if (!isValidDateString(bookingDate)) {
+    throw new Error("Choose a valid date on the calendar.");
+  }
+  if (!ALLOWED_SERVICES.has(service)) {
+    throw new Error("Choose a booking type.");
+  }
+  if (!name) throw new Error("Name is required.");
+  if (!email || !email.includes("@")) throw new Error("Valid email is required.");
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const selected = new Date(bookingDate + "T12:00:00");
+  if (Number.isNaN(selected.getTime()) || selected < today) {
+    throw new Error("Please choose today or a future date.");
+  }
+
+  const now = new Date().toISOString();
+  const guestCount =
+    Number.isFinite(guests) && guests > 0 ? Math.min(Math.floor(guests), 500) : null;
+
+  if (usePostgres) {
+    const result = await pgPool.query(
+      `INSERT INTO bookings
+        (booking_date, booking_time, service, name, email, phone, guests, notes, status, created_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'requested', $9)
+       RETURNING *`,
+      [
+        bookingDate,
+        bookingTime || null,
+        service,
+        name,
+        email,
+        phone || null,
+        guestCount,
+        notes || null,
+        now,
+      ]
+    );
+    return result.rows[0];
+  }
+
+  const result = sqlite
+    .prepare(
+      `INSERT INTO bookings
+        (booking_date, booking_time, service, name, email, phone, guests, notes, status, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'requested', ?)`
+    )
+    .run(
+      bookingDate,
+      bookingTime || null,
+      service,
+      name,
+      email,
+      phone || null,
+      guestCount,
+      notes || null,
+      now
+    );
+
+  return sqlite
+    .prepare("SELECT * FROM bookings WHERE id = ?")
+    .get(Number(result.lastInsertRowid));
+}
+
+async function listBookings() {
+  if (usePostgres) {
+    const result = await pgPool.query(
+      `SELECT * FROM bookings ORDER BY booking_date ASC, created_at DESC`
+    );
+    return result.rows;
+  }
+  return sqlite
+    .prepare(`SELECT * FROM bookings ORDER BY booking_date ASC, created_at DESC`)
+    .all();
+}
+
+async function listBookedDates(fromDate, toDate) {
+  if (usePostgres) {
+    const result = await pgPool.query(
+      `SELECT booking_date::text AS booking_date, COUNT(*)::int AS count
+       FROM bookings
+       WHERE booking_date >= $1::date AND booking_date <= $2::date
+       GROUP BY booking_date
+       ORDER BY booking_date`,
+      [fromDate, toDate]
+    );
+    return result.rows;
+  }
+
+  return sqlite
+    .prepare(
+      `SELECT booking_date, COUNT(*) AS count
+       FROM bookings
+       WHERE booking_date >= ? AND booking_date <= ?
+       GROUP BY booking_date
+       ORDER BY booking_date`
+    )
+    .all(fromDate, toDate);
+}
+
 module.exports = {
   initDb,
   upsertNewsletterSignup,
   listCustomers,
   normalizeEmail,
   getDbInfo,
+  createBooking,
+  listBookings,
+  listBookedDates,
+  ALLOWED_SERVICES,
 };

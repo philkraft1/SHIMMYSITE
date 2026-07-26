@@ -10,6 +10,9 @@ const {
   upsertNewsletterSignup,
   listCustomers,
   getDbInfo,
+  createBooking,
+  listBookings,
+  listBookedDates,
 } = require("./db");
 
 const port = Number(process.env.PORT) || 3001;
@@ -101,6 +104,99 @@ app.get("/api/customers", async (req, res) => {
     });
   }
   return res.json({ customers: await listCustomers() });
+});
+
+async function notifyBooking(booking) {
+  if (!newsletterInbox) return;
+  try {
+    await fetch(
+      "https://formsubmit.co/ajax/" + encodeURIComponent(newsletterInbox),
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          _subject: `New booking request — ${booking.booking_date} (${booking.service})`,
+          _template: "table",
+          _captcha: "false",
+          date: booking.booking_date,
+          time: booking.booking_time || "flexible",
+          service: booking.service,
+          name: booking.name,
+          email: booking.email,
+          phone: booking.phone || "",
+          guests: booking.guests || "",
+          notes: booking.notes || "",
+          status: booking.status,
+        }),
+      }
+    );
+  } catch {
+    // best-effort email
+  }
+}
+
+app.get("/api/bookings/dates", async (req, res) => {
+  const from = String(req.query.from || "").trim();
+  const to = String(req.query.to || "").trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(from) || !/^\d{4}-\d{2}-\d{2}$/.test(to)) {
+    return res.status(400).json({ error: "Provide from and to as YYYY-MM-DD." });
+  }
+  try {
+    const dates = await listBookedDates(from, to);
+    return res.json({ dates });
+  } catch (err) {
+    return res.status(500).json({ error: err.message || "Could not load dates." });
+  }
+});
+
+function asDateOnly(value) {
+  if (!value) return null;
+  if (typeof value === "string") return value.slice(0, 10);
+  if (value instanceof Date) {
+    const y = value.getUTCFullYear();
+    const m = String(value.getUTCMonth() + 1).padStart(2, "0");
+    const d = String(value.getUTCDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  }
+  return String(value).slice(0, 10);
+}
+
+app.post("/api/bookings", async (req, res) => {
+  try {
+    const booking = await createBooking(req.body || {});
+    const dateOnly = asDateOnly(booking.booking_date);
+    notifyBooking({ ...booking, booking_date: dateOnly });
+    // Also track email as a customer for recurring insight
+    try {
+      await upsertNewsletterSignup(booking.email, "booking-request");
+    } catch {
+      // ignore newsletter upsert failures
+    }
+    return res.status(201).json({
+      ok: true,
+      booking: {
+        id: booking.id,
+        date: dateOnly,
+        time: booking.booking_time,
+        service: booking.service,
+        status: booking.status,
+      },
+    });
+  } catch (err) {
+    return res.status(400).json({ error: err.message || "Booking failed." });
+  }
+});
+
+app.get("/api/bookings", async (req, res) => {
+  if (!adminKey || req.get("x-admin-key") !== adminKey) {
+    return res.status(401).json({
+      error: "Unauthorized. Set ADMIN_KEY in api/.env and send x-admin-key header.",
+    });
+  }
+  return res.json({ bookings: await listBookings() });
 });
 
 app.get("/api/config", (_req, res) => {
