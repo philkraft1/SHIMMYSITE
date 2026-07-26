@@ -3,7 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Contact — Rosenfeld Ranch</title>
+    <title>Blog — Rosenfeld Ranch</title>
+    <meta
+      name="description"
+      content="Ranch updates from The Rosenfeld Ranch — hours, events, Village news, and farm notes."
+    />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -39,10 +43,10 @@
               <a href="testimonials.html" role="menuitem">Testimonials</a>
               <a href="membership.html" role="menuitem">Membership</a>
               <a href="instagram.html" role="menuitem">Instagram</a>
-              <a href="blog.html" role="menuitem">Blog</a>
+              <a href="blog.html" role="menuitem" aria-current="page">Blog</a>
             </div>
           </div>
-          <a href="contact.html" aria-current="page">Contact</a>
+          <a href="contact.html">Contact</a>
           <span class="nav-cta">
             <a class="btn btn-primary" href="ranch.html#admission">Pay online</a>
           </span>
@@ -53,81 +57,66 @@
     <main>
       <section class="page-hero">
         <div class="wrap">
-          <p class="eyebrow">Get in touch</p>
-          <h1>Contact Rosenfeld Ranch</h1>
+          <p class="eyebrow">Ranch updates</p>
+          <h1>Blog</h1>
           <p class="lead">
-            Questions about visits, The Village, or parties? Call or follow our
-            WhatsApp status for the latest updates.
+            Hours changes, Village openings, Traveling Ranch dates, and notes
+            from the farm — posted as they happen.
           </p>
         </div>
       </section>
 
       <section class="section section--tight">
-        <div class="wrap split">
-          <div class="info-panel">
-            <dl>
-              <div>
-                <dt>Phone</dt>
-                <dd>
-                  <a href="tel:9293262188">(929) 326-2188</a>
-                </dd>
-              </div>
-              <div>
-                <dt>WhatsApp</dt>
-                <dd>Follow our WhatsApp status for updates</dd>
-              </div>
-              <div>
-                <dt>Ranch</dt>
-                <dd>184 Kent Rd, Howell, NJ 07731</dd>
-              </div>
-              <div>
-                <dt>The Village</dt>
-                <dd>
-                  1368 River Ave<br />
-                  Lakewood, NJ
-                </dd>
-              </div>
-              <div>
-                <dt>Online payments</dt>
-                <dd>Pay online with Square — same account as the register</dd>
-              </div>
-            </dl>
-            <div class="btn-row">
-              <a class="btn btn-primary" href="tel:9293262188">Call (929) 326-2188</a>
-              <a class="btn btn-secondary" href="https://wa.me/19293262188" target="_blank" rel="noopener">WhatsApp</a>
-            </div>
-          </div>
-
-          <form class="form-card" action="#" method="post" onsubmit="return false;">
-            <h3 style="margin-bottom: 1rem">Send a message</h3>
-            <div class="form-row">
-              <label for="name">Name</label>
-              <input id="name" name="name" type="text" placeholder="Your name" />
-            </div>
-            <div class="form-row">
-              <label for="email">Email</label>
-              <input id="email" name="email" type="email" placeholder="you@email.com" />
-            </div>
-            <div class="form-row">
-              <label for="topic">Topic</label>
-              <select id="topic" name="topic">
-                <option>General question</option>
-                <option>Day visit</option>
-                <option>The Village / puppies</option>
-                <option>Birthday or private event</option>
-                <option>Animals for sale</option>
-              </select>
-            </div>
-            <div class="form-row">
-              <label for="message">Message</label>
-              <textarea id="message" name="message" placeholder="How can we help?"></textarea>
-            </div>
-            <button class="btn btn-primary is-disabled" type="submit">Call or WhatsApp us instead</button>
-            <p style="margin-top: 0.75rem; font-size: 0.88rem; color: var(--ink-soft)">
-              For the fastest response, call or WhatsApp
+        <div class="wrap blog-layout">
+          <div>
+            <p id="blog-empty" class="blog-empty" hidden>
+              No posts yet. Check back soon, or call
               <a href="tel:9293262188">(929) 326-2188</a>.
             </p>
-          </form>
+            <div id="blog-posts" class="blog-feed" aria-live="polite"></div>
+          </div>
+
+          <aside class="blog-aside">
+            <p id="blog-status" class="blog-status" hidden></p>
+
+            <div id="blog-unlock" class="blog-admin-box">
+              <h2>Post an update</h2>
+              <p>
+                Ranch staff can publish here with the admin key (same
+                <code>ADMIN_KEY</code> as the API).
+              </p>
+              <form id="blog-unlock-form" class="blog-form">
+                <label>
+                  Admin key
+                  <input
+                    type="password"
+                    name="adminKey"
+                    autocomplete="current-password"
+                    required
+                  />
+                </label>
+                <button class="btn btn-secondary" type="submit">Unlock</button>
+              </form>
+            </div>
+
+            <div id="blog-admin" class="blog-admin-box" hidden>
+              <div class="blog-admin-head">
+                <h2>New post</h2>
+                <button id="blog-lock" class="blog-text-btn" type="button">Lock</button>
+              </div>
+              <form id="blog-admin-form" class="blog-form">
+                <label>
+                  Title
+                  <input type="text" name="title" maxlength="160" required />
+                </label>
+                <label>
+                  Update
+                  <textarea name="body" rows="8" required></textarea>
+                </label>
+                <button class="btn btn-primary" type="submit">Publish</button>
+              </form>
+            </div>
+          </aside>
         </div>
       </section>
     </main>
@@ -179,7 +168,9 @@
       </div>
     </footer>
 
+    <script src="newsletter.config.js"></script>
     <script src="nav.js"></script>
+    <script src="blog.js"></script>
     <script>
       document.getElementById("year").textContent = new Date().getFullYear();
     </script>

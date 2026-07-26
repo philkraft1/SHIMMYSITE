@@ -57,6 +57,14 @@ async function initDb() {
       );
 
       CREATE INDEX IF NOT EXISTS bookings_date_idx ON bookings (booking_date);
+
+      CREATE TABLE IF NOT EXISTS blog_posts (
+        id SERIAL PRIMARY KEY,
+        title TEXT NOT NULL,
+        body TEXT NOT NULL,
+        published_at TIMESTAMPTZ NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL
+      );
     `);
     return { driver: "postgres" };
   }
@@ -98,6 +106,14 @@ async function initDb() {
       guests INTEGER,
       notes TEXT,
       status TEXT NOT NULL DEFAULT 'requested',
+      created_at TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS blog_posts (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      body TEXT NOT NULL,
+      published_at TEXT NOT NULL,
       created_at TEXT NOT NULL
     );
   `);
@@ -347,6 +363,79 @@ async function listBookedDates(fromDate, toDate) {
     .all(fromDate, toDate);
 }
 
+async function listBlogPosts() {
+  if (usePostgres) {
+    const result = await pgPool.query(
+      `SELECT id, title, body, published_at, created_at
+       FROM blog_posts
+       ORDER BY published_at DESC, id DESC`
+    );
+    return result.rows;
+  }
+  return sqlite
+    .prepare(
+      `SELECT id, title, body, published_at, created_at
+       FROM blog_posts
+       ORDER BY published_at DESC, id DESC`
+    )
+    .all();
+}
+
+async function createBlogPost(input) {
+  const title = String(input.title || "").trim();
+  const body = String(input.body || "").trim();
+  const publishedAt = String(input.publishedAt || "").trim() || new Date().toISOString();
+
+  if (!title) throw new Error("Title is required.");
+  if (!body) throw new Error("Post body is required.");
+  if (title.length > 160) throw new Error("Title is too long (max 160 characters).");
+  if (body.length > 20000) throw new Error("Post is too long.");
+
+  const now = new Date().toISOString();
+
+  if (usePostgres) {
+    const result = await pgPool.query(
+      `INSERT INTO blog_posts (title, body, published_at, created_at)
+       VALUES ($1, $2, $3, $4)
+       RETURNING *`,
+      [title, body, publishedAt, now]
+    );
+    return result.rows[0];
+  }
+
+  const result = sqlite
+    .prepare(
+      `INSERT INTO blog_posts (title, body, published_at, created_at)
+       VALUES (?, ?, ?, ?)`
+    )
+    .run(title, body, publishedAt, now);
+
+  return sqlite
+    .prepare("SELECT * FROM blog_posts WHERE id = ?")
+    .get(Number(result.lastInsertRowid));
+}
+
+async function deleteBlogPost(id) {
+  const postId = Number(id);
+  if (!Number.isFinite(postId) || postId < 1) {
+    throw new Error("Valid post id is required.");
+  }
+
+  if (usePostgres) {
+    const result = await pgPool.query(
+      "DELETE FROM blog_posts WHERE id = $1 RETURNING id",
+      [postId]
+    );
+    if (!result.rows[0]) throw new Error("Post not found.");
+    return { id: postId };
+  }
+
+  const existing = sqlite.prepare("SELECT id FROM blog_posts WHERE id = ?").get(postId);
+  if (!existing) throw new Error("Post not found.");
+  sqlite.prepare("DELETE FROM blog_posts WHERE id = ?").run(postId);
+  return { id: postId };
+}
+
 module.exports = {
   initDb,
   upsertNewsletterSignup,
@@ -357,4 +446,7 @@ module.exports = {
   listBookings,
   listBookedDates,
   ALLOWED_SERVICES,
+  listBlogPosts,
+  createBlogPost,
+  deleteBlogPost,
 };

@@ -13,6 +13,9 @@ const {
   createBooking,
   listBookings,
   listBookedDates,
+  listBlogPosts,
+  createBlogPost,
+  deleteBlogPost,
 } = require("./db");
 
 const port = Number(process.env.PORT) || 3001;
@@ -197,6 +200,41 @@ app.get("/api/bookings", async (req, res) => {
     });
   }
   return res.json({ bookings: await listBookings() });
+});
+
+app.get("/api/blog", async (_req, res) => {
+  try {
+    return res.json({ posts: await listBlogPosts() });
+  } catch (err) {
+    return res.status(500).json({ error: err.message || "Could not load blog posts." });
+  }
+});
+
+app.post("/api/blog", async (req, res) => {
+  if (!adminKey || req.get("x-admin-key") !== adminKey) {
+    return res.status(401).json({
+      error: "Unauthorized. Set ADMIN_KEY in api/.env and send x-admin-key header.",
+    });
+  }
+  try {
+    const post = await createBlogPost(req.body || {});
+    return res.status(201).json({ ok: true, post });
+  } catch (err) {
+    return res.status(400).json({ error: err.message || "Could not publish post." });
+  }
+});
+
+app.delete("/api/blog/:id", async (req, res) => {
+  if (!adminKey || req.get("x-admin-key") !== adminKey) {
+    return res.status(401).json({
+      error: "Unauthorized. Set ADMIN_KEY in api/.env and send x-admin-key header.",
+    });
+  }
+  try {
+    return res.json({ ok: true, ...(await deleteBlogPost(req.params.id)) });
+  } catch (err) {
+    return res.status(404).json({ error: err.message || "Could not delete post." });
+  }
 });
 
 app.get("/api/config", (_req, res) => {
