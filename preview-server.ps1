@@ -1,6 +1,6 @@
 # Lightweight static server with live-reload for Rosenfeld Ranch preview
 $root = $PSScriptRoot
-$port = 5502
+$port = 5504
 $prefix = "http://127.0.0.1:$port/"
 
 $mime = @{

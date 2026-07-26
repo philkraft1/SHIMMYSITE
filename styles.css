@@ -203,17 +203,100 @@ h3 {
 .logo-mark {
   width: 44px;
   height: 44px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, #7a5640, var(--wood-deep));
-  color: var(--cream);
-  display: grid;
-  place-items: center;
-  font-family: var(--font-display);
-  font-size: 1.35rem;
-  font-weight: 700;
+  object-fit: contain;
   flex-shrink: 0;
-  box-shadow: 0 4px 14px rgba(36, 24, 16, 0.25);
-  border: 2px solid rgba(247, 241, 230, 0.35);
+  display: block;
+}
+
+/* Minimal home splash */
+.splash-page {
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(201, 162, 39, 0.12), transparent 55%),
+    radial-gradient(ellipse at 20% 100%, rgba(107, 127, 74, 0.12), transparent 50%),
+    var(--cream);
+}
+
+.splash {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2.5rem 1.25rem 2rem;
+  gap: 1.25rem;
+}
+
+.splash-logo {
+  width: min(92vw, 420px);
+  height: auto;
+  filter: drop-shadow(0 18px 40px rgba(36, 24, 16, 0.18));
+}
+
+.splash-tag {
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.splash-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 240px));
+  gap: 1rem;
+  width: min(100%, 520px);
+  margin-top: 0.5rem;
+}
+
+.splash-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 5.5rem;
+  font-size: 1.25rem;
+  padding: 1.1rem 1.25rem;
+  text-decoration: none;
+  border-radius: 16px;
+}
+
+.splash-btn span {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  opacity: 0.85;
+}
+
+.splash-foot {
+  margin-top: 1.25rem;
+  font-size: 0.92rem;
+  color: var(--ink-soft);
+}
+
+.splash-foot a {
+  color: var(--ink-soft);
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.splash-foot a:hover {
+  color: var(--wood);
+}
+
+@media (max-width: 560px) {
+  .splash-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .splash-logo {
+    width: min(88vw, 340px);
+  }
 }
 
 .logo-text {
