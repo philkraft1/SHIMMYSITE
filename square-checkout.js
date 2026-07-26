@@ -71,7 +71,9 @@
       return;
     }
 
-    window.open(url, "_blank", "noopener,noreferrer");
+    // Same-tab navigation: window.open after an awaited fetch gets
+    // silently blocked by pop-up blockers.
+    window.location.href = url;
   }
 
   function wireButtons() {
@@ -100,8 +102,12 @@
     document.querySelectorAll("[data-square-nav]").forEach(function (link) {
       if (!ready) return;
       link.classList.remove("is-disabled");
-      link.href = "tickets.html#admission";
       link.textContent = link.getAttribute("data-square-label") || "Pay online";
+      link.href = "#admission";
+      link.addEventListener("click", function (e) {
+        e.preventDefault();
+        startCheckout("admission", link);
+      });
     });
   }
 
