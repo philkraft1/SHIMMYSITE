@@ -1,3 +1,5 @@
 node_modules/
 .env
 api/.env
+api/data/
+api/node_modules/

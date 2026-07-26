@@ -83,6 +83,14 @@
           </p>
           <form id="newsletter-form" class="newsletter-form" novalidate>
             <label class="visually-hidden" for="newsletter-email">Email</label>
+            <input
+              class="newsletter-honey"
+              type="text"
+              name="_honey"
+              tabindex="-1"
+              autocomplete="off"
+              aria-hidden="true"
+            />
             <div class="newsletter-row">
               <input
                 id="newsletter-email"
@@ -95,7 +103,7 @@
               <button class="btn btn-primary" type="submit">Join the list</button>
             </div>
             <p class="newsletter-fine">
-              Free to join. Unsubscribe anytime.
+              Free to join. We’ll only email ranch updates.
             </p>
           </form>
           <p id="newsletter-success" class="newsletter-success" hidden>
@@ -105,6 +113,7 @@
       </div>
     </div>
 
+    <script src="newsletter.config.js"></script>
     <script src="newsletter.js"></script>
   </body>
 </html>

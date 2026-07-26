@@ -3,6 +3,7 @@
   var dialog = document.getElementById("newsletter-dialog");
   var form = document.getElementById("newsletter-form");
   var success = document.getElementById("newsletter-success");
+  var config = window.NEWSLETTER_CONFIG || {};
   if (!dialog || !form) return;
 
   function openDialog() {
@@ -36,20 +37,67 @@
     }
   });
 
-  form.addEventListener("submit", function (e) {
+  form.addEventListener("submit", async function (e) {
     e.preventDefault();
     var email = (form.email.value || "").trim();
     if (!email) return;
 
-    // Ready to wire to Mailchimp / Formspree / Square later.
-    form.hidden = true;
-    if (success) {
-      success.hidden = false;
-    }
-    localStorage.setItem(STORAGE_KEY, "1");
-    setTimeout(function () {
+    if (form._honey && form._honey.value) {
       closeDialog(true);
-    }, 2200);
+      return;
+    }
+
+    var submitBtn = form.querySelector('button[type="submit"]');
+    var originalLabel = submitBtn ? submitBtn.textContent : "";
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Joining…";
+    }
+
+    var base = (config.apiBaseUrl || "http://127.0.0.1:3001").replace(/\/$/, "");
+
+    try {
+      var res = await fetch(base + "/api/newsletter", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          email: email,
+          source: "homepage-newsletter",
+        }),
+      });
+
+      var data = await res.json().catch(function () {
+        return {};
+      });
+
+      if (!res.ok) {
+        throw new Error(data.error || "Could not join the list. Try again.");
+      }
+
+      form.hidden = true;
+      if (success) {
+        success.hidden = false;
+        success.textContent = data.recurring
+          ? "Welcome back — you’re already on the ranch list."
+          : "You’re on the list — see you at the ranch.";
+      }
+      localStorage.setItem(STORAGE_KEY, "1");
+      setTimeout(function () {
+        closeDialog(true);
+      }, 2200);
+    } catch (err) {
+      window.alert(
+        (err && err.message) ||
+          "Could not join the list. Make sure the ranch API is running."
+      );
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalLabel;
+      }
+    }
   });
 
   setTimeout(openDialog, 1200);

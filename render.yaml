@@ -1,0 +1,28 @@
+# Free Render web service for the ranch API + newsletter database.
+# Pair with a free Neon Postgres DATABASE_URL (https://neon.tech).
+services:
+  - type: web
+    name: rosenfeld-ranch-api
+    runtime: node
+    plan: free
+    rootDir: api
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: SQUARE_ACCESS_TOKEN
+        sync: false
+      - key: SQUARE_LOCATION_ID
+        sync: false
+      - key: SQUARE_ENVIRONMENT
+        value: production
+      - key: NEWSLETTER_INBOX
+        value: therosenfeldranch@gmail.com
+      - key: ADMIN_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: CHECKOUT_REDIRECT_URL
+        sync: false
