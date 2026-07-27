@@ -29,6 +29,9 @@ const redirectUrl = process.env.CHECKOUT_REDIRECT_URL || "";
 const newsletterInbox =
   process.env.NEWSLETTER_INBOX || "therosenfeldranch@gmail.com";
 const adminKey = process.env.ADMIN_KEY || "";
+const sitePublicUrl = (
+  process.env.SITE_PUBLIC_URL || "https://therosenfeldranch.com"
+).replace(/\/$/, "");
 
 const app = express();
 app.use(cors({ origin: true }));
@@ -39,32 +42,71 @@ const client = squareConfigured
   ? new SquareClient({ token: accessToken, environment })
   : null;
 
-async function notifyNewsletterInbox(email, recurring) {
-  if (!newsletterInbox) return;
-  try {
-    await fetch(
-      "https://formsubmit.co/ajax/" + encodeURIComponent(newsletterInbox),
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          recurring: recurring ? "yes — returning subscriber" : "no — new subscriber",
-          _subject: recurring
-            ? "Returning ranch newsletter signup"
-            : "New ranch newsletter signup",
-          _template: "table",
-          _captcha: "false",
-          source: "Rosenfeld Ranch API",
-        }),
-      }
-    );
-  } catch {
-    // Email notify is best-effort; DB save is the source of truth.
+/**
+ * FormSubmit rejects bare server posts unless Origin/Referer look like a real site.
+ * First use also requires the inbox owner to click "Activate Form" in email (check spam).
+ */
+async function sendFormSubmit(fields) {
+  if (!newsletterInbox) {
+    return { ok: false, error: "NEWSLETTER_INBOX is not set." };
   }
+  const url =
+    "https://formsubmit.co/ajax/" + encodeURIComponent(newsletterInbox);
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Origin: sitePublicUrl,
+        Referer: sitePublicUrl + "/",
+        "User-Agent":
+          "Mozilla/5.0 (compatible; RosenfeldRanchAPI/1.0; +https://therosenfeldranch.com)",
+      },
+      body: JSON.stringify({
+        _template: "table",
+        _captcha: "false",
+        _honey: "",
+        ...fields,
+      }),
+    });
+    const text = await res.text();
+    let data = null;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = null;
+    }
+    const success =
+      res.ok &&
+      data &&
+      String(data.success) !== "false" &&
+      !/needs Activation/i.test(String(data.message || ""));
+    if (!success) {
+      const error =
+        (data && data.message) ||
+        text.slice(0, 280) ||
+        `FormSubmit HTTP ${res.status}`;
+      console.error("[email] FormSubmit failed:", error);
+      return { ok: false, error, raw: data || text };
+    }
+    return { ok: true, raw: data };
+  } catch (err) {
+    console.error("[email] FormSubmit error:", err.message || err);
+    return { ok: false, error: err.message || "FormSubmit request failed." };
+  }
+}
+
+async function notifyNewsletterInbox(email, recurring) {
+  return sendFormSubmit({
+    email,
+    recurring: recurring ? "yes — returning subscriber" : "no — new subscriber",
+    _subject: recurring
+      ? "Returning ranch newsletter signup"
+      : "New ranch newsletter signup",
+    _replyto: email,
+    source: "Rosenfeld Ranch API",
+  });
 }
 
 app.get("/api/health", (_req, res) => {
@@ -245,35 +287,20 @@ app.get("/api/customers", async (req, res) => {
 });
 
 async function notifyBooking(booking) {
-  if (!newsletterInbox) return;
-  try {
-    await fetch(
-      "https://formsubmit.co/ajax/" + encodeURIComponent(newsletterInbox),
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
-          _subject: `New booking request — ${booking.booking_date} (${booking.service})`,
-          _template: "table",
-          _captcha: "false",
-          date: booking.booking_date,
-          time: booking.booking_time || "flexible",
-          service: booking.service,
-          name: booking.name,
-          email: booking.email,
-          phone: booking.phone || "",
-          guests: booking.guests || "",
-          notes: booking.notes || "",
-          status: booking.status,
-        }),
-      }
-    );
-  } catch {
-    // best-effort email
-  }
+  return sendFormSubmit({
+    _subject: `New booking request — ${booking.booking_date} (${booking.service})`,
+    _replyto: booking.email,
+    date: booking.booking_date,
+    time: booking.booking_time || "flexible",
+    service: booking.service,
+    name: booking.name,
+    email: booking.email,
+    phone: booking.phone || "",
+    guests: booking.guests || "",
+    notes: booking.notes || "",
+    status: booking.status,
+    source: "Rosenfeld Ranch bookings",
+  });
 }
 
 app.get("/api/bookings/dates", async (req, res) => {
@@ -306,7 +333,10 @@ app.post("/api/bookings", async (req, res) => {
   try {
     const booking = await createBooking(req.body || {});
     const dateOnly = asDateOnly(booking.booking_date);
-    notifyBooking({ ...booking, booking_date: dateOnly });
+    const emailNotify = await notifyBooking({
+      ...booking,
+      booking_date: dateOnly,
+    });
     // Also track email as a customer for recurring insight
     try {
       await upsertNewsletterSignup(booking.email, "booking-request");
@@ -315,6 +345,8 @@ app.post("/api/bookings", async (req, res) => {
     }
     return res.status(201).json({
       ok: true,
+      emailSent: Boolean(emailNotify && emailNotify.ok),
+      emailError: emailNotify && !emailNotify.ok ? emailNotify.error : null,
       booking: {
         id: booking.id,
         date: dateOnly,
@@ -326,6 +358,33 @@ app.post("/api/bookings", async (req, res) => {
   } catch (err) {
     return res.status(400).json({ error: err.message || "Booking failed." });
   }
+});
+
+/** Manual email delivery check — useful during GoDaddy launch / client QA. */
+app.post("/api/bookings/test-email", async (req, res) => {
+  if (adminKey && req.get("x-admin-key") !== adminKey) {
+    return res.status(401).json({ error: "Unauthorized." });
+  }
+  const result = await sendFormSubmit({
+    _subject: "Rosenfeld Ranch — booking email test",
+    _replyto: newsletterInbox,
+    name: "Email test",
+    email: newsletterInbox,
+    date: new Date().toISOString().slice(0, 10),
+    time: "flexible",
+    service: "email-test",
+    phone: "",
+    guests: "1",
+    notes:
+      "If you received this, booking notifications are working. If you got an Activate Form link instead, click it once, then test again.",
+    status: "test",
+    source: "Rosenfeld Ranch email test",
+  });
+  return res.status(result.ok ? 200 : 502).json({
+    ok: result.ok,
+    inbox: newsletterInbox,
+    error: result.error || null,
+  });
 });
 
 app.get("/api/bookings", async (req, res) => {

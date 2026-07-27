@@ -165,10 +165,28 @@
       form.reset();
       dateInput.value = selected || "";
       statusEl.hidden = false;
-      statusEl.textContent =
-        "Request sent for " +
-        (data.booking && data.booking.date) +
-        ". The ranch will confirm by phone or email.";
+      var dateText = (data.booking && data.booking.date) || dateInput.value;
+      if (data.emailSent) {
+        statusEl.textContent =
+          "Request sent for " +
+          dateText +
+          ". The ranch was emailed and will confirm by phone or email.";
+      } else if (
+        data.emailError &&
+        /Activation/i.test(String(data.emailError))
+      ) {
+        statusEl.textContent =
+          "Request saved for " +
+          dateText +
+          ", but email delivery needs a one-time FormSubmit activation. Check therosenfeldranch@gmail.com (and spam) for “Activate Form”, click it, then book again.";
+      } else {
+        statusEl.textContent =
+          "Request saved for " +
+          dateText +
+          ". Email notify failed" +
+          (data.emailError ? " (" + data.emailError + ")" : "") +
+          " — call (929) 326-2188 to confirm.";
+      }
       refresh();
     } catch (err) {
       window.alert(
