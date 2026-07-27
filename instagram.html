@@ -71,24 +71,17 @@
               rel="noopener"
             >Open Instagram</a>
           </div>
-        </div>
-      </section>
 
-      <section class="section section--tight">
-        <div class="wrap">
-          <div class="instagram-feed">
-            <iframe
-              title="The Rosenfeld Ranch on Instagram"
-              src="https://www.instagram.com/the_rosenfeld_ranch/embed"
-              loading="lazy"
-              allowtransparency="true"
-              allowfullscreen
-            ></iframe>
+          <div class="instagram-feed-wrap" aria-label="Live Instagram feed">
+            <div id="instagram-feed" class="instagram-feed" hidden></div>
+            <div id="instagram-fallback" class="instagram-fallback">
+              <p>Loading the latest posts from @the_rosenfeld_ranch…</p>
+            </div>
           </div>
           <p class="instagram-note">
-            If the feed doesn’t load (some browsers block Instagram embeds), use
-            <a href="https://www.instagram.com/the_rosenfeld_ranch/" target="_blank" rel="noopener">@the_rosenfeld_ranch</a>
-            to follow him directly.
+            Latest posts from
+            <a href="https://www.instagram.com/the_rosenfeld_ranch/" target="_blank" rel="noopener">@the_rosenfeld_ranch</a>.
+            Tap any photo to open it on Instagram.
           </p>
         </div>
       </section>
@@ -144,7 +137,9 @@
       </div>
     </footer>
 
+    <script src="newsletter.config.js"></script>
     <script src="nav.js"></script>
+    <script src="instagram.js"></script>
     <script>
       document.getElementById("year").textContent = new Date().getFullYear();
     </script>

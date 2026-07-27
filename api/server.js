@@ -78,6 +78,141 @@ app.get("/api/health", (_req, res) => {
   });
 });
 
+/** Cached Instagram feed scraped via Imginn (native IG embeds are unreliable). */
+const IG_USERNAME = "the_rosenfeld_ranch";
+const IG_UA =
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+let igCache = { at: 0, payload: null };
+const IG_CACHE_MS = 15 * 60 * 1000;
+
+function decodeHtml(html) {
+  return html
+    .replace(/&amp;/g, "&")
+    .replace(/&#38;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'");
+}
+
+function parseImginnPosts(html) {
+  const decoded = decodeHtml(html);
+  const posts = [];
+  const seen = new Set();
+  const re =
+    /href="(\/p\/([A-Za-z0-9_-]+)\/?)"[\s\S]{0,1800}?(https:\/\/scontent[^"\s>]+\.(?:jpg|jpeg|webp)[^"\s>]*)/gi;
+  let m;
+  while ((m = re.exec(decoded)) && posts.length < 12) {
+    const id = m[2];
+    if (seen.has(id)) continue;
+    seen.add(id);
+    posts.push({
+      id,
+      permalink: `https://www.instagram.com/p/${id}/`,
+      image: m[3],
+      caption: "",
+    });
+  }
+
+  const fallback =
+    /<a[^>]+href="(\/p\/([A-Za-z0-9_-]+)\/?)"[^>]*>[\s\S]*?<img[^>]+src="(https:\/\/s\d+\.imginn\.com\/[^"]+)"/gi;
+  while ((m = fallback.exec(decoded)) && posts.length < 12) {
+    const id = m[2];
+    if (seen.has(id)) continue;
+    seen.add(id);
+    posts.push({
+      id,
+      permalink: `https://www.instagram.com/p/${id}/`,
+      image: m[3],
+      caption: "",
+    });
+  }
+  return posts;
+}
+
+async function fetchInstagramFeed() {
+  const now = Date.now();
+  if (igCache.payload && now - igCache.at < IG_CACHE_MS) {
+    return igCache.payload;
+  }
+  const url = `https://www.imginn.com/${IG_USERNAME}/`;
+  const res = await fetch(url, {
+    headers: {
+      "User-Agent": IG_UA,
+      Accept: "text/html,application/xhtml+xml",
+      "Accept-Language": "en-US,en;q=0.9",
+    },
+  });
+  if (!res.ok) throw new Error(`Imginn ${res.status}`);
+  const html = await res.text();
+  const posts = parseImginnPosts(html);
+  if (!posts.length) throw new Error("No posts parsed");
+  const payload = {
+    username: IG_USERNAME,
+    profileUrl: `https://www.instagram.com/${IG_USERNAME}/`,
+    source: "imginn",
+    updatedAt: new Date().toISOString(),
+    posts,
+  };
+  igCache = { at: now, payload };
+  return payload;
+}
+
+function isAllowedMediaUrl(raw) {
+  try {
+    const u = new URL(raw);
+    if (u.protocol !== "https:") return false;
+    const host = u.hostname.toLowerCase();
+    return (
+      host.endsWith("cdninstagram.com") ||
+      host.endsWith("fbcdn.net") ||
+      /^s\d+\.imginn\.com$/.test(host)
+    );
+  } catch {
+    return false;
+  }
+}
+
+app.get("/api/instagram/feed", async (_req, res) => {
+  try {
+    const payload = await fetchInstagramFeed();
+    res.set("Cache-Control", "public, max-age=300");
+    return res.json(payload);
+  } catch (err) {
+    return res.status(502).json({
+      error: err.message || "Instagram feed unavailable.",
+    });
+  }
+});
+
+app.get("/api/instagram/media", async (req, res) => {
+  const raw = String(req.query.url || "").trim();
+  if (!isAllowedMediaUrl(raw)) {
+    return res.status(400).json({ error: "Invalid media URL." });
+  }
+  try {
+    const host = new URL(raw).hostname.toLowerCase();
+    const referer = host.includes("imginn.com")
+      ? "https://www.imginn.com/"
+      : "https://www.instagram.com/";
+    const upstream = await fetch(raw, {
+      headers: {
+        "User-Agent": IG_UA,
+        Referer: referer,
+        Accept: "image/avif,image/webp,image/apng,image/*,*/*;q=0.8",
+      },
+    });
+    if (!upstream.ok) {
+      return res.status(502).json({ error: `Upstream ${upstream.status}` });
+    }
+    const type = upstream.headers.get("content-type") || "image/jpeg";
+    const buf = Buffer.from(await upstream.arrayBuffer());
+    res.set("Content-Type", type);
+    res.set("Cache-Control", "public, max-age=86400");
+    return res.send(buf);
+  } catch (err) {
+    return res.status(502).json({ error: err.message || "Media proxy failed." });
+  }
+});
+
 app.post("/api/newsletter", async (req, res) => {
   const email = req.body?.email;
   const source = req.body?.source || "homepage-newsletter";
