@@ -1,26 +1,35 @@
-# GoDaddy upload — rosenfeldranch.com
+# Live launch — rosenfeldranch.com
 
-## Ready-to-upload package
-`C:\Users\phsok\OneDrive\Desktop\petting-zoo\dist\rosenfeldranch-godaddy.zip`
+## Status
+- Site files deployed to GitHub Pages branch `gh-pages`
+- Custom domain set to `rosenfeldranch.com` in GitHub Pages
+- API live at `https://rosenfeld-ranch-api.onrender.com`
+- GoDaddy currently still points DNS at Website Builder (“Launching Soon”)
 
-1. Log into GoDaddy → your domain **rosenfeldranch.com** → Hosting → File Manager (or cPanel).
-2. Open the site document root (`public_html` / domain root).
-3. Delete or rename the current “Launching Soon” files.
-4. Upload and extract `rosenfeldranch-godaddy.zip` so `index.html` sits at the root.
-5. Visit https://rosenfeldranch.com and hard-refresh.
+## Finish the swap (DNS at GoDaddy) — required
+Sign in at GoDaddy → Domain **rosenfeldranch.com** → **DNS**:
 
-## Do NOT upload
-- `api/`
-- `node_modules/`
-- `.env` / secrets
-- `images/_pretrim/`
-- `scripts/`
+1. Remove Website Builder / forwarding A records (`13.248.243.5`, `76.223.105.230`) if present.
+2. Add these **A** records for `@` (root):
 
-## Live API (already deployed)
-- Health: https://rosenfeld-ranch-api.onrender.com/api/health
-- Dashboard: https://dashboard.render.com/web/srv-d9k094pt0dsc738m7k8g
-- Site JS already points `apiBaseUrl` at this Render URL.
+```
+185.199.108.153
+185.199.109.153
+185.199.110.153
+185.199.111.153
+```
 
-## After swap
-- First booking/newsletter may need a FormSubmit “Activate Form” click in `therosenfeldranch@gmail.com` (check spam).
-- Free Render apps sleep after idle — first request can take ~30s to wake.
+3. Set **www** CNAME to:
+
+```
+philkraft1.github.io
+```
+
+4. Save. Wait 5–30 minutes for DNS.
+5. In GitHub → repo Settings → Pages → enable **Enforce HTTPS** once available.
+
+## Temporary preview (while DNS updates)
+After Pages finishes building: https://philkraft1.github.io/SHIMMYSITE/
+
+## Upload zip (only if you switch to cPanel file hosting later)
+`dist/rosenfeldranch-godaddy.zip`
