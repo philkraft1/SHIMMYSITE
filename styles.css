@@ -1734,7 +1734,7 @@ a.btn.is-disabled {
 .xp-layout {
   display: grid;
   grid-template-columns: minmax(0, 1.4fr) minmax(16rem, 0.75fr);
-  gap: 2.5rem;
+  gap: 3.5rem 4.5rem;
   align-items: start;
 }
 
@@ -1816,6 +1816,14 @@ a.btn.is-disabled {
 .xp-aside {
   position: sticky;
   top: 5.5rem;
+  min-width: 0;
+}
+
+@media (min-width: 721px) {
+  .xp-aside {
+    padding-left: 1.25rem;
+    border-left: 1px solid var(--border);
+  }
 }
 
 .xp-form-title {
