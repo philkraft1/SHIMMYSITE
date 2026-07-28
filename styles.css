@@ -945,6 +945,34 @@ a.btn.is-disabled {
   pointer-events: none;
 }
 
+.checkout-success {
+  background: rgba(20, 140, 120, 0.18);
+  border-bottom: 1px solid rgba(20, 140, 120, 0.45);
+  padding: 1rem 0;
+}
+
+.checkout-success[hidden] {
+  display: none !important;
+}
+
+.checkout-success-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.25rem;
+}
+
+.checkout-success-inner p {
+  margin: 0;
+  color: var(--ink, #f2f2f2);
+  max-width: 42rem;
+}
+
+.checkout-success-dismiss {
+  flex-shrink: 0;
+}
+
 /* Hero */
 .hero {
   padding: 2.5rem 0 3.5rem;

@@ -12,8 +12,10 @@ window.SQUARE_CONFIG = {
   applicationId: "",
   locationId: "LQESF525RARVA",
   apiBaseUrl: "https://rosenfeld-ranch-api.onrender.com",
-  checkoutMode: "static",
-  redirectUrl: "https://rosenfeldranch.com/",
+  // Quick Pay links from Square are single-use. After one payment they stay on
+  // "Transaction complete" forever — always create a fresh link via the API.
+  checkoutMode: "api",
+  redirectUrl: "https://rosenfeldranch.com/ranch.html",
   items: {
     admission: {
       name: "General admission",

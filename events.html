@@ -123,7 +123,14 @@
                 Additional hours $300/hr; outside Lakewood &amp; Catskills
                 $250/hr of travel.
               </p>
-              <a class="btn btn-primary" href="https://square.link/u/3VD3FW6z" target="_blank" rel="noopener">Pay package — $1,000</a>
+              <button
+                class="btn btn-primary"
+                type="button"
+                data-square-item="traveling-standard"
+                data-square-label="Pay package — $1,000"
+              >
+                Pay package — $1,000
+              </button>
             </article>
             <article class="price-card">
               <span class="tag">Mini experience</span>
@@ -135,7 +142,14 @@
                 4 bunnies &amp; 12 chicks. Lakewood &amp; Catskills only;
                 additional hours $300/hr.
               </p>
-              <a class="btn btn-primary" href="https://square.link/u/a8zspY5M" target="_blank" rel="noopener">Pay mini — $600</a>
+              <button
+                class="btn btn-primary"
+                type="button"
+                data-square-item="traveling-mini"
+                data-square-label="Pay mini — $600"
+              >
+                Pay mini — $600
+              </button>
             </article>
             <article class="price-card">
               <span class="tag tag--warn">Hold your date</span>
@@ -145,7 +159,14 @@
                 A $100 deposit reserves your date. The remaining balance is due
                 in full upon setup on the day of the event.
               </p>
-              <a class="btn btn-primary" href="https://square.link/u/CE5OhzY8" target="_blank" rel="noopener">Reserve your date — $100</a>
+              <button
+                class="btn btn-primary"
+                type="button"
+                data-square-item="traveling-deposit"
+                data-square-label="Reserve your date — $100"
+              >
+                Reserve your date — $100
+              </button>
             </article>
           </div>
           <div class="wrap split" style="padding: 2rem 0 0">
@@ -268,6 +289,8 @@
       </div>
     </footer>
 
+    <script src="square.config.js"></script>
+    <script src="square-checkout.js"></script>
     <script src="nav.js"></script>
     <script>
       document.getElementById("year").textContent = new Date().getFullYear();

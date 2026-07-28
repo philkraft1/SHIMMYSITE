@@ -25,7 +25,8 @@ const environment =
   process.env.SQUARE_ENVIRONMENT === "production"
     ? SquareEnvironment.Production
     : SquareEnvironment.Sandbox;
-const redirectUrl = process.env.CHECKOUT_REDIRECT_URL || "";
+const redirectUrl =
+  process.env.CHECKOUT_REDIRECT_URL || "https://rosenfeldranch.com/ranch.html";
 const newsletterInbox =
   process.env.NEWSLETTER_INBOX || "therosenfeldranch@gmail.com";
 const adminKey = process.env.ADMIN_KEY || "";
@@ -35,7 +36,30 @@ const sitePublicUrl = (
 
 const app = express();
 app.use(cors({ origin: true }));
-app.use(express.json());
+app.use(express.json({ limit: "64kb" }));
+
+function requireAdmin(req, res) {
+  if (!adminKey) {
+    res.status(503).json({
+      error: "Admin access is not configured. Set ADMIN_KEY on the API host.",
+    });
+    return false;
+  }
+  const provided = String(req.get("x-admin-key") || "");
+  const expected = Buffer.from(adminKey);
+  const got = Buffer.from(provided);
+  const ok =
+    expected.length > 0 &&
+    expected.length === got.length &&
+    crypto.timingSafeEqual(expected, got);
+  if (!ok) {
+    res.status(401).json({
+      error: "Unauthorized. Send a valid x-admin-key header.",
+    });
+    return false;
+  }
+  return true;
+}
 
 const squareConfigured = Boolean(accessToken && locationId);
 const client = squareConfigured
@@ -277,12 +301,13 @@ app.post("/api/newsletter", async (req, res) => {
   }
 });
 
+app.get("/api/admin/verify", (req, res) => {
+  if (!requireAdmin(req, res)) return;
+  return res.json({ ok: true });
+});
+
 app.get("/api/customers", async (req, res) => {
-  if (!adminKey || req.get("x-admin-key") !== adminKey) {
-    return res.status(401).json({
-      error: "Unauthorized. Set ADMIN_KEY in api/.env and send x-admin-key header.",
-    });
-  }
+  if (!requireAdmin(req, res)) return;
   return res.json({ customers: await listCustomers() });
 });
 
@@ -362,9 +387,7 @@ app.post("/api/bookings", async (req, res) => {
 
 /** Manual email delivery check — useful during GoDaddy launch / client QA. */
 app.post("/api/bookings/test-email", async (req, res) => {
-  if (adminKey && req.get("x-admin-key") !== adminKey) {
-    return res.status(401).json({ error: "Unauthorized." });
-  }
+  if (!requireAdmin(req, res)) return;
   const result = await sendFormSubmit({
     _subject: "Rosenfeld Ranch — booking email test",
     _replyto: newsletterInbox,
@@ -388,11 +411,7 @@ app.post("/api/bookings/test-email", async (req, res) => {
 });
 
 app.get("/api/bookings", async (req, res) => {
-  if (!adminKey || req.get("x-admin-key") !== adminKey) {
-    return res.status(401).json({
-      error: "Unauthorized. Set ADMIN_KEY in api/.env and send x-admin-key header.",
-    });
-  }
+  if (!requireAdmin(req, res)) return;
   return res.json({ bookings: await listBookings() });
 });
 
@@ -405,11 +424,7 @@ app.get("/api/blog", async (_req, res) => {
 });
 
 app.post("/api/blog", async (req, res) => {
-  if (!adminKey || req.get("x-admin-key") !== adminKey) {
-    return res.status(401).json({
-      error: "Unauthorized. Set ADMIN_KEY in api/.env and send x-admin-key header.",
-    });
-  }
+  if (!requireAdmin(req, res)) return;
   try {
     const post = await createBlogPost(req.body || {});
     return res.status(201).json({ ok: true, post });
@@ -419,11 +434,7 @@ app.post("/api/blog", async (req, res) => {
 });
 
 app.delete("/api/blog/:id", async (req, res) => {
-  if (!adminKey || req.get("x-admin-key") !== adminKey) {
-    return res.status(401).json({
-      error: "Unauthorized. Set ADMIN_KEY in api/.env and send x-admin-key header.",
-    });
-  }
+  if (!requireAdmin(req, res)) return;
   try {
     return res.json({ ok: true, ...(await deleteBlogPost(req.params.id)) });
   } catch (err) {

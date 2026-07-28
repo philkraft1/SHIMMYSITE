@@ -11,8 +11,11 @@
   var apiBase =
     (window.NEWSLETTER_CONFIG && window.NEWSLETTER_CONFIG.apiBaseUrl) ||
     "https://rosenfeld-ranch-api.onrender.com";
-  var adminKey = sessionStorage.getItem("ranchBlogAdminKey") || "";
+  var adminKey = "";
   var canManage = false;
+  var wantsAdmin =
+    /(?:\?|&)admin=1(?:&|$)/.test(window.location.search) ||
+    window.location.hash === "#admin";
 
   function setStatus(msg, isError) {
     if (!statusEl) return;
@@ -114,32 +117,74 @@
     }
   }
 
+  async function verifyAdminKey(key) {
+    var res = await fetch(apiBase.replace(/\/$/, "") + "/api/admin/verify", {
+      method: "GET",
+      headers: { "x-admin-key": key },
+      cache: "no-store",
+    });
+    if (res.status === 401 || res.status === 403) return false;
+    if (res.status === 503) {
+      throw new Error("Admin access is not configured on the API yet.");
+    }
+    if (!res.ok) {
+      throw new Error("Could not verify admin key.");
+    }
+    return true;
+  }
+
   function showAdmin(unlocked) {
     canManage = unlocked;
     if (adminPanel) adminPanel.hidden = !unlocked;
-    if (unlockPanel) unlockPanel.hidden = unlocked;
+    if (unlockPanel) unlockPanel.hidden = !wantsAdmin || unlocked;
     loadPosts();
   }
 
+  function clearAdminSession() {
+    adminKey = "";
+    sessionStorage.removeItem("ranchBlogAdminKey");
+    canManage = false;
+  }
+
+  if (unlockPanel) unlockPanel.hidden = !wantsAdmin;
+  if (adminPanel) adminPanel.hidden = true;
+
   if (unlockForm) {
-    unlockForm.addEventListener("submit", function (e) {
+    unlockForm.addEventListener("submit", async function (e) {
       e.preventDefault();
       var key = String(new FormData(unlockForm).get("adminKey") || "").trim();
       if (!key) {
-        setStatus("Enter the admin key from api/.env (ADMIN_KEY).", true);
+        setStatus("Enter the admin key.", true);
         return;
       }
-      adminKey = key;
-      sessionStorage.setItem("ranchBlogAdminKey", adminKey);
-      setStatus("Unlocked — you can publish posts while this tab stays open.");
-      showAdmin(true);
+      var submitBtn = unlockForm.querySelector('button[type="submit"]');
+      if (submitBtn) submitBtn.disabled = true;
+      setStatus("Checking key…");
+      try {
+        var ok = await verifyAdminKey(key);
+        if (!ok) {
+          clearAdminSession();
+          showAdmin(false);
+          setStatus("Invalid admin key.", true);
+          return;
+        }
+        adminKey = key;
+        sessionStorage.setItem("ranchBlogAdminKey", adminKey);
+        setStatus("Unlocked — you can publish while this tab stays open.");
+        showAdmin(true);
+      } catch (err) {
+        clearAdminSession();
+        showAdmin(false);
+        setStatus(err.message || "Could not verify admin key.", true);
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
+      }
     });
   }
 
   if (lockBtn) {
     lockBtn.addEventListener("click", function () {
-      adminKey = "";
-      sessionStorage.removeItem("ranchBlogAdminKey");
+      clearAdminSession();
       setStatus("Admin locked.");
       showAdmin(false);
     });
@@ -172,6 +217,11 @@
         var data = await res.json().catch(function () {
           return {};
         });
+        if (res.status === 401 || res.status === 403) {
+          clearAdminSession();
+          showAdmin(false);
+          throw new Error(data.error || "Unauthorized.");
+        }
         if (!res.ok) {
           throw new Error(data.error || "Could not publish.");
         }
@@ -181,7 +231,7 @@
       } catch (err) {
         setStatus(
           err.message ||
-            "Publish failed. Is the API running? (node server.js in api/)",
+            "Publish failed. Is the API running?",
           true
         );
       } finally {
@@ -204,6 +254,11 @@
         var data = await res.json().catch(function () {
           return {};
         });
+        if (res.status === 401 || res.status === 403) {
+          clearAdminSession();
+          showAdmin(false);
+          throw new Error(data.error || "Unauthorized.");
+        }
         if (!res.ok) throw new Error(data.error || "Delete failed.");
         setStatus("Post deleted.");
         await loadPosts();
@@ -213,6 +268,26 @@
     });
   }
 
-  if (adminKey) showAdmin(true);
-  else loadPosts();
+  async function boot() {
+    var stored = sessionStorage.getItem("ranchBlogAdminKey") || "";
+    if (wantsAdmin && stored) {
+      try {
+        if (await verifyAdminKey(stored)) {
+          adminKey = stored;
+          setStatus("Unlocked.");
+          showAdmin(true);
+          return;
+        }
+      } catch (_err) {
+        // fall through
+      }
+      clearAdminSession();
+    } else if (stored && !wantsAdmin) {
+      // Do not auto-show admin UI on the public blog URL.
+      clearAdminSession();
+    }
+    showAdmin(false);
+  }
+
+  boot();
 })();

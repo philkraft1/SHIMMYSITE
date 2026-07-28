@@ -8,7 +8,7 @@
         return Boolean(config.items[id].paymentLinkUrl);
       });
     }
-    return Boolean(config.locationId);
+    return Boolean(config.locationId || config.apiBaseUrl);
   }
 
   function getItem(id) {
@@ -87,15 +87,17 @@
 
       var hasStaticLink =
         config.checkoutMode === "static" && Boolean(item.paymentLinkUrl);
-      var hasApi = config.checkoutMode === "api" && Boolean(config.locationId);
+      var hasApi = config.checkoutMode === "api" && Boolean(config.apiBaseUrl);
 
       if (hasStaticLink || hasApi) {
         enableButton(btn, btn.getAttribute("data-square-label") || "Pay online");
-        btn.addEventListener("click", function () {
+        btn.addEventListener("click", function (e) {
+          e.preventDefault();
           startCheckout(itemId, btn);
         });
       } else if (ready === false) {
         btn.setAttribute("aria-disabled", "true");
+        btn.classList.add("is-disabled");
       }
     });
 
@@ -122,6 +124,60 @@
     });
   }
 
+  /**
+   * After a successful Square checkout, buyers are redirected with orderId /
+   * transactionId query params. Show a dismissible banner and strip those
+   * params so a revisit / refresh shows the normal purchase UI again.
+   */
+  function handleCheckoutReturn() {
+    var params = new URLSearchParams(window.location.search);
+    var orderId = params.get("orderId") || params.get("order_id");
+    var transactionId =
+      params.get("transactionId") || params.get("transaction_id");
+    if (!orderId && !transactionId) return;
+
+    var banner = document.getElementById("checkout-success");
+    if (!banner) {
+      banner = document.createElement("div");
+      banner.id = "checkout-success";
+      banner.className = "checkout-success";
+      banner.setAttribute("role", "status");
+      var main = document.querySelector("main");
+      if (main && main.firstChild) {
+        main.insertBefore(banner, main.firstChild);
+      } else {
+        document.body.insertBefore(banner, document.body.firstChild);
+      }
+    }
+
+    banner.hidden = false;
+    banner.innerHTML =
+      '<div class="wrap checkout-success-inner">' +
+      "<p><strong>Payment received.</strong> Thanks — you’re all set. Show this confirmation at the ranch if asked.</p>" +
+      '<button type="button" class="btn btn-ghost checkout-success-dismiss">Continue</button>' +
+      "</div>";
+
+    var dismiss = banner.querySelector(".checkout-success-dismiss");
+    if (dismiss) {
+      dismiss.addEventListener("click", function () {
+        banner.hidden = true;
+      });
+    }
+
+    params.delete("orderId");
+    params.delete("order_id");
+    params.delete("transactionId");
+    params.delete("transaction_id");
+    params.delete("referenceId");
+    params.delete("reference_id");
+    var clean =
+      window.location.pathname +
+      (params.toString() ? "?" + params.toString() : "") +
+      window.location.hash;
+    window.history.replaceState({}, "", clean);
+  }
+
   wireButtons();
   updateStatusNotes();
+  handleCheckoutReturn();
 })();
