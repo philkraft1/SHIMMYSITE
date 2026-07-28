@@ -7,6 +7,6 @@
  */
 window.NEWSLETTER_CONFIG = {
   inbox: "therosenfeldranch@gmail.com",
-  apiBaseUrl: "http://127.0.0.1:3001",
+  apiBaseUrl: "https://rosenfeld-ranch-api.onrender.com",
   subject: "New ranch newsletter signup",
 };

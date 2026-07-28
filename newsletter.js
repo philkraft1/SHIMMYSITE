@@ -54,7 +54,7 @@
       submitBtn.textContent = "Joining…";
     }
 
-    var base = (config.apiBaseUrl || "http://127.0.0.1:3001").replace(/\/$/, "");
+    var base = (config.apiBaseUrl || "https://rosenfeld-ranch-api.onrender.com").replace(/\/$/, "");
 
     try {
       var res = await fetch(base + "/api/newsletter", {

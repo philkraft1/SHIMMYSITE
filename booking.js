@@ -1,6 +1,6 @@
 (function () {
   var config = window.NEWSLETTER_CONFIG || window.SITE_CONFIG || {};
-  var apiBase = (config.apiBaseUrl || "http://127.0.0.1:3001").replace(/\/$/, "");
+  var apiBase = (config.apiBaseUrl || "https://rosenfeld-ranch-api.onrender.com").replace(/\/$/, "");
 
   var monthLabel = document.getElementById("cal-month-label");
   var grid = document.getElementById("cal-grid");

@@ -30,7 +30,7 @@ const newsletterInbox =
   process.env.NEWSLETTER_INBOX || "therosenfeldranch@gmail.com";
 const adminKey = process.env.ADMIN_KEY || "";
 const sitePublicUrl = (
-  process.env.SITE_PUBLIC_URL || "https://therosenfeldranch.com"
+  process.env.SITE_PUBLIC_URL || "https://rosenfeldranch.com"
 ).replace(/\/$/, "");
 
 const app = express();
@@ -61,7 +61,7 @@ async function sendFormSubmit(fields) {
         Origin: sitePublicUrl,
         Referer: sitePublicUrl + "/",
         "User-Agent":
-          "Mozilla/5.0 (compatible; RosenfeldRanchAPI/1.0; +https://therosenfeldranch.com)",
+          "Mozilla/5.0 (compatible; RosenfeldRanchAPI/1.0; +https://rosenfeldranch.com)",
       },
       body: JSON.stringify({
         _template: "table",

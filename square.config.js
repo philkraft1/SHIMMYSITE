@@ -11,9 +11,9 @@ window.SQUARE_CONFIG = {
   environment: "production",
   applicationId: "",
   locationId: "LQESF525RARVA",
-  apiBaseUrl: "http://127.0.0.1:3001",
+  apiBaseUrl: "https://rosenfeld-ranch-api.onrender.com",
   checkoutMode: "static",
-  redirectUrl: "",
+  redirectUrl: "https://rosenfeldranch.com/",
   items: {
     admission: {
       name: "General admission",

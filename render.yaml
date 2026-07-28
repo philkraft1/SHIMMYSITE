@@ -24,5 +24,7 @@ services:
         sync: false
       - key: DATABASE_URL
         sync: false
+      - key: SITE_PUBLIC_URL
+        value: https://rosenfeldranch.com
       - key: CHECKOUT_REDIRECT_URL
-        sync: false
+        value: https://rosenfeldranch.com/

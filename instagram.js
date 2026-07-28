@@ -12,7 +12,7 @@
 
   var apiBase =
     (window.NEWSLETTER_CONFIG && window.NEWSLETTER_CONFIG.apiBaseUrl) ||
-    "http://127.0.0.1:3001";
+    "https://rosenfeld-ranch-api.onrender.com";
   var useApiProxy = false;
 
   function escapeHtml(str) {
