@@ -1797,6 +1797,108 @@ a.btn.is-disabled {
   color: var(--accent);
 }
 
+.xp-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));
+  gap: 0.65rem;
+  margin: 1rem 0 0.15rem;
+  max-width: 40rem;
+}
+
+.xp-gallery-item {
+  display: block;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+}
+
+.xp-gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.xp-photos-row input[type="file"] {
+  width: 100%;
+  padding: 0.55rem 0;
+  color: var(--text-muted);
+  background: transparent;
+  border: 0;
+}
+
+.xp-photos-row input[type="file"]::file-selector-button {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-right: 0.85rem;
+  padding: 0.45rem 0.85rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.xp-photo-hint {
+  margin: 0.35rem 0 0;
+  font-size: 0.86rem;
+  color: var(--ink-soft);
+}
+
+.xp-photo-preview {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.55rem;
+  margin-top: 0.75rem;
+}
+
+.xp-photo-thumb {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 1;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: #000;
+}
+
+.xp-photo-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.xp-photo-remove {
+  position: absolute;
+  top: 0.3rem;
+  right: 0.3rem;
+  width: 1.55rem;
+  height: 1.55rem;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.72);
+  color: #fff;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.xp-photo-remove:hover,
+.xp-photo-remove:focus-visible {
+  background: var(--accent);
+  outline: none;
+}
+
+@media (max-width: 520px) {
+  .xp-photo-preview {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 .xp-rating {
   display: inline-flex;
   gap: 0.1rem;

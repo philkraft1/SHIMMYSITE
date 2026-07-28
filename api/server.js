@@ -18,8 +18,10 @@ const {
   deleteBlogPost,
   listExperiences,
   createExperience,
+  getExperiencePhoto,
 } = require("./db");
 const { assertCleanText } = require("./moderation");
+const { MAX_PHOTOS, MAX_BYTES } = require("./photos");
 
 const port = Number(process.env.PORT) || 3001;
 const accessToken = process.env.SQUARE_ACCESS_TOKEN || "";
@@ -39,7 +41,13 @@ const sitePublicUrl = (
 
 const app = express();
 app.use(cors({ origin: true }));
-app.use(express.json({ limit: "64kb" }));
+app.use((req, res, next) => {
+  const largePhotoPost =
+    req.method === "POST" &&
+    (req.path === "/api/experiences" ||
+      String(req.url || "").split("?")[0] === "/api/experiences");
+  return express.json({ limit: largePhotoPost ? "22mb" : "64kb" })(req, res, next);
+});
 
 function requireAdmin(req, res) {
   if (!adminKey) {
@@ -481,6 +489,20 @@ app.get("/api/experiences", async (req, res) => {
   }
 });
 
+app.get("/api/experiences/:id/photos/:index", async (req, res) => {
+  try {
+    const photo = await getExperiencePhoto(req.params.id, req.params.index);
+    if (!photo) {
+      return res.status(404).json({ error: "Photo not found." });
+    }
+    res.set("Content-Type", photo.mime);
+    res.set("Cache-Control", "public, max-age=86400, immutable");
+    return res.send(photo.data);
+  } catch (err) {
+    return res.status(400).json({ error: err.message || "Could not load photo." });
+  }
+});
+
 app.post("/api/experiences", async (req, res) => {
   const ip = clientIp(req);
   if (!checkExperienceRateLimit(ip)) {
@@ -497,7 +519,11 @@ app.post("/api/experiences", async (req, res) => {
       body: body.body,
     });
     const item = await createExperience(body);
-    return res.status(201).json({ ok: true, item });
+    return res.status(201).json({
+      ok: true,
+      item,
+      limits: { maxPhotos: MAX_PHOTOS, maxBytesPerPhoto: MAX_BYTES },
+    });
   } catch (err) {
     const status = err.code === "BLOCKED_LANGUAGE" ? 400 : 400;
     return res.status(status).json({

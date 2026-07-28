@@ -98,6 +98,20 @@
                   <label for="xp-body">Your story</label>
                   <textarea id="xp-body" name="body" rows="8" maxlength="4000" required placeholder="Tell us about the day — who came, what happened, what you’ll remember."></textarea>
                 </div>
+                <div class="form-row xp-photos-row">
+                  <label for="xp-photos">Photos <span class="xp-optional">(optional, max 4)</span></label>
+                  <input
+                    id="xp-photos"
+                    name="photos"
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    multiple
+                  />
+                  <p id="xp-photo-hint" class="xp-photo-hint">
+                    Optional — up to 4 photos (JPEG, PNG, or WebP, 5MB each).
+                  </p>
+                  <div id="xp-photo-preview" class="xp-photo-preview" aria-live="polite"></div>
+                </div>
                 <button class="btn btn-primary" type="submit">Post testimonial</button>
               </form>
             </div>
