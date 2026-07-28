@@ -61,8 +61,47 @@
           <h1>Testimonials</h1>
           <p class="lead">
             Longer stories from birthdays, photo shoots, and days at the ranch.
-            Testimonials coming soon.
           </p>
+          <div class="btn-row" style="margin-top: 1.25rem">
+            <a class="btn btn-primary" href="#share" id="experience-open">Share your story</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section--tight" id="experiences-root" data-kind="testimonial">
+        <div class="wrap xp-layout">
+          <div>
+            <p id="experiences-empty" class="xp-empty" hidden>
+              No testimonials yet — share a longer story from your day at the ranch.
+            </p>
+            <div id="experiences-list" class="xp-feed" aria-live="polite"></div>
+          </div>
+
+          <aside class="xp-aside" id="share">
+            <div class="form-card" id="experience-panel">
+              <h2 class="xp-form-title">Share your story</h2>
+              <p class="xp-form-lead">
+                Birthdays, photo shoots, Village visits — write a bit more than a quick review.
+                Posts go live after a quick language check.
+              </p>
+              <p id="experience-status" class="xp-status" hidden></p>
+              <form id="experience-form" class="xp-form">
+                <div class="form-row">
+                  <label for="xp-name">Your name</label>
+                  <input id="xp-name" name="name" type="text" maxlength="80" required autocomplete="name" />
+                </div>
+                <div class="form-row">
+                  <label for="xp-title">Title <span class="xp-optional">(optional)</span></label>
+                  <input id="xp-title" name="title" type="text" maxlength="120" placeholder="e.g. Our daughter’s first pony ride" />
+                </div>
+                <div class="form-row">
+                  <label for="xp-body">Your story</label>
+                  <textarea id="xp-body" name="body" rows="8" maxlength="4000" required placeholder="Tell us about the day — who came, what happened, what you’ll remember."></textarea>
+                </div>
+                <button class="btn btn-primary" type="submit">Post testimonial</button>
+              </form>
+            </div>
+          </aside>
         </div>
       </section>
     </main>
@@ -111,7 +150,9 @@
       </div>
     </footer>
 
+    <script src="newsletter.config.js"></script>
     <script src="nav.js"></script>
+    <script src="experiences.js"></script>
     <script>
       document.getElementById("year").textContent = new Date().getFullYear();
     </script>

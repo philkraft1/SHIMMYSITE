@@ -65,6 +65,20 @@ async function initDb() {
         published_at TIMESTAMPTZ NOT NULL,
         created_at TIMESTAMPTZ NOT NULL
       );
+
+      CREATE TABLE IF NOT EXISTS experiences (
+        id SERIAL PRIMARY KEY,
+        kind TEXT NOT NULL,
+        name TEXT NOT NULL,
+        title TEXT,
+        body TEXT NOT NULL,
+        rating INTEGER,
+        approved BOOLEAN NOT NULL DEFAULT TRUE,
+        created_at TIMESTAMPTZ NOT NULL
+      );
+
+      CREATE INDEX IF NOT EXISTS experiences_kind_created_idx
+        ON experiences (kind, created_at DESC);
     `);
     return { driver: "postgres" };
   }
@@ -116,6 +130,20 @@ async function initDb() {
       published_at TEXT NOT NULL,
       created_at TEXT NOT NULL
     );
+
+    CREATE TABLE IF NOT EXISTS experiences (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      kind TEXT NOT NULL,
+      name TEXT NOT NULL,
+      title TEXT,
+      body TEXT NOT NULL,
+      rating INTEGER,
+      approved INTEGER NOT NULL DEFAULT 1,
+      created_at TEXT NOT NULL
+    );
+
+    CREATE INDEX IF NOT EXISTS experiences_kind_created_idx
+      ON experiences (kind, created_at DESC);
   `);
   return { driver: "sqlite", dbPath };
 }
@@ -436,6 +464,106 @@ async function deleteBlogPost(id) {
   return { id: postId };
 }
 
+const ALLOWED_EXPERIENCE_KINDS = new Set(["review", "testimonial"]);
+
+function mapExperienceRow(row) {
+  if (!row) return row;
+  return {
+    id: row.id,
+    kind: row.kind,
+    name: row.name,
+    title: row.title || null,
+    body: row.body,
+    rating: row.rating == null ? null : Number(row.rating),
+    approved: Boolean(row.approved),
+    created_at: row.created_at,
+  };
+}
+
+async function listExperiences(kind) {
+  const k = String(kind || "").trim().toLowerCase();
+  if (!ALLOWED_EXPERIENCE_KINDS.has(k)) {
+    throw new Error("kind must be review or testimonial.");
+  }
+
+  if (usePostgres) {
+    const result = await pgPool.query(
+      `SELECT id, kind, name, title, body, rating, approved, created_at
+       FROM experiences
+       WHERE kind = $1 AND approved = TRUE
+       ORDER BY created_at DESC, id DESC
+       LIMIT 200`,
+      [k]
+    );
+    return result.rows.map(mapExperienceRow);
+  }
+
+  return sqlite
+    .prepare(
+      `SELECT id, kind, name, title, body, rating, approved, created_at
+       FROM experiences
+       WHERE kind = ? AND approved = 1
+       ORDER BY created_at DESC, id DESC
+       LIMIT 200`
+    )
+    .all(k)
+    .map(mapExperienceRow);
+}
+
+async function createExperience(input) {
+  const kind = String(input.kind || "").trim().toLowerCase();
+  const name = String(input.name || "").trim();
+  const title = String(input.title || "").trim();
+  const body = String(input.body || "").trim();
+  const ratingRaw = input.rating;
+
+  if (!ALLOWED_EXPERIENCE_KINDS.has(kind)) {
+    throw new Error("kind must be review or testimonial.");
+  }
+  if (!name) throw new Error("Name is required.");
+  if (name.length > 80) throw new Error("Name is too long (max 80 characters).");
+  if (title.length > 120) throw new Error("Title is too long (max 120 characters).");
+  if (!body) throw new Error("Please share a few sentences about your visit.");
+  if (body.length < 12) throw new Error("Please write a bit more about your experience.");
+  if (body.length > 4000) throw new Error("Message is too long (max 4000 characters).");
+
+  let rating = null;
+  if (kind === "review") {
+    rating = Number(ratingRaw);
+    if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+      throw new Error("Please choose a rating from 1 to 5 stars.");
+    }
+  }
+
+  const now = new Date().toISOString();
+
+  if (usePostgres) {
+    const result = await pgPool.query(
+      `INSERT INTO experiences (kind, name, title, body, rating, approved, created_at)
+       VALUES ($1, $2, $3, $4, $5, TRUE, $6)
+       RETURNING id, kind, name, title, body, rating, approved, created_at`,
+      [kind, name, title || null, body, rating, now]
+    );
+    return mapExperienceRow(result.rows[0]);
+  }
+
+  const result = sqlite
+    .prepare(
+      `INSERT INTO experiences (kind, name, title, body, rating, approved, created_at)
+       VALUES (?, ?, ?, ?, ?, 1, ?)`
+    )
+    .run(kind, name, title || null, body, rating, now);
+
+  return mapExperienceRow(
+    sqlite
+      .prepare(
+        `SELECT id, kind, name, title, body, rating, approved, created_at
+         FROM experiences WHERE id = ?`
+      )
+      .get(Number(result.lastInsertRowid))
+  );
+}
+
 module.exports = {
   initDb,
   upsertNewsletterSignup,
@@ -449,4 +577,7 @@ module.exports = {
   listBlogPosts,
   createBlogPost,
   deleteBlogPost,
+  ALLOWED_EXPERIENCE_KINDS,
+  listExperiences,
+  createExperience,
 };

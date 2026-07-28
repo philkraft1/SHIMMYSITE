@@ -61,8 +61,57 @@
           <h1>Reviews</h1>
           <p class="lead">
             Ratings and feedback from families who visited the ranch and The
-            Village. Reviews coming soon.
+            Village.
           </p>
+          <div class="btn-row" style="margin-top: 1.25rem">
+            <a class="btn btn-primary" href="#share" id="experience-open">Share your review</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section--tight" id="experiences-root" data-kind="review">
+        <div class="wrap xp-layout">
+          <div>
+            <p id="experiences-empty" class="xp-empty" hidden>
+              No reviews yet — be the first to share how your visit went.
+            </p>
+            <div id="experiences-list" class="xp-feed" aria-live="polite"></div>
+          </div>
+
+          <aside class="xp-aside" id="share">
+            <div class="form-card" id="experience-panel">
+              <h2 class="xp-form-title">Share your review</h2>
+              <p class="xp-form-lead">
+                Tell other families what stood out. Posts go live after a quick language check.
+              </p>
+              <p id="experience-status" class="xp-status" hidden></p>
+              <form id="experience-form" class="xp-form">
+                <div class="form-row">
+                  <label for="xp-name">Your name</label>
+                  <input id="xp-name" name="name" type="text" maxlength="80" required autocomplete="name" />
+                </div>
+                <div class="form-row">
+                  <label for="xp-title">Headline <span class="xp-optional">(optional)</span></label>
+                  <input id="xp-title" name="title" type="text" maxlength="120" placeholder="e.g. Perfect birthday morning" />
+                </div>
+                <div class="form-row" id="experience-rating">
+                  <span class="xp-rating-label" id="xp-rating-label">Rating</span>
+                  <div class="xp-stars" role="radiogroup" aria-labelledby="xp-rating-label">
+                    <label class="xp-star-pick"><input type="radio" name="rating" value="1" required /><span>★</span><span class="visually-hidden">1 star</span></label>
+                    <label class="xp-star-pick"><input type="radio" name="rating" value="2" /><span>★</span><span class="visually-hidden">2 stars</span></label>
+                    <label class="xp-star-pick"><input type="radio" name="rating" value="3" /><span>★</span><span class="visually-hidden">3 stars</span></label>
+                    <label class="xp-star-pick"><input type="radio" name="rating" value="4" /><span>★</span><span class="visually-hidden">4 stars</span></label>
+                    <label class="xp-star-pick"><input type="radio" name="rating" value="5" /><span>★</span><span class="visually-hidden">5 stars</span></label>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <label for="xp-body">Your experience</label>
+                  <textarea id="xp-body" name="body" rows="6" maxlength="4000" required placeholder="What did you enjoy? Who came with you?"></textarea>
+                </div>
+                <button class="btn btn-primary" type="submit">Post review</button>
+              </form>
+            </div>
+          </aside>
         </div>
       </section>
     </main>
@@ -111,7 +160,9 @@
       </div>
     </footer>
 
+    <script src="newsletter.config.js"></script>
     <script src="nav.js"></script>
+    <script src="experiences.js"></script>
     <script>
       document.getElementById("year").textContent = new Date().getFullYear();
     </script>

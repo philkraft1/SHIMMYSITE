@@ -16,7 +16,10 @@ const {
   listBlogPosts,
   createBlogPost,
   deleteBlogPost,
+  listExperiences,
+  createExperience,
 } = require("./db");
+const { assertCleanText } = require("./moderation");
 
 const port = Number(process.env.PORT) || 3001;
 const accessToken = process.env.SQUARE_ACCESS_TOKEN || "";
@@ -439,6 +442,68 @@ app.delete("/api/blog/:id", async (req, res) => {
     return res.json({ ok: true, ...(await deleteBlogPost(req.params.id)) });
   } catch (err) {
     return res.status(404).json({ error: err.message || "Could not delete post." });
+  }
+});
+
+/** Simple in-memory rate limit for public experience submissions. */
+const experienceSubmitHits = new Map();
+const EXPERIENCE_RATE_WINDOW_MS = 15 * 60 * 1000;
+const EXPERIENCE_RATE_MAX = 5;
+
+function clientIp(req) {
+  const forwarded = String(req.headers["x-forwarded-for"] || "")
+    .split(",")[0]
+    .trim();
+  return forwarded || req.ip || req.socket?.remoteAddress || "unknown";
+}
+
+function checkExperienceRateLimit(ip) {
+  const now = Date.now();
+  const key = String(ip || "unknown");
+  const existing = experienceSubmitHits.get(key) || [];
+  const recent = existing.filter((t) => now - t < EXPERIENCE_RATE_WINDOW_MS);
+  if (recent.length >= EXPERIENCE_RATE_MAX) {
+    return false;
+  }
+  recent.push(now);
+  experienceSubmitHits.set(key, recent);
+  return true;
+}
+
+app.get("/api/experiences", async (req, res) => {
+  try {
+    const kind = String(req.query.kind || "").trim().toLowerCase();
+    const items = await listExperiences(kind);
+    res.set("Cache-Control", "public, max-age=30");
+    return res.json({ items });
+  } catch (err) {
+    return res.status(400).json({ error: err.message || "Could not load posts." });
+  }
+});
+
+app.post("/api/experiences", async (req, res) => {
+  const ip = clientIp(req);
+  if (!checkExperienceRateLimit(ip)) {
+    return res.status(429).json({
+      error: "Too many submissions from this connection. Please try again later.",
+    });
+  }
+
+  try {
+    const body = req.body || {};
+    assertCleanText({
+      name: body.name,
+      title: body.title,
+      body: body.body,
+    });
+    const item = await createExperience(body);
+    return res.status(201).json({ ok: true, item });
+  } catch (err) {
+    const status = err.code === "BLOCKED_LANGUAGE" ? 400 : 400;
+    return res.status(status).json({
+      error: err.message || "Could not save your post.",
+      code: err.code || null,
+    });
   }
 });
 
