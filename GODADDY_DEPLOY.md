@@ -1,10 +1,13 @@
 # GoDaddy upload — rosenfeldranch.com
 
-## What to upload
-Use the zip: `dist/rosenfeldranch-godaddy.zip`
+## Ready-to-upload package
+`C:\Users\phsok\OneDrive\Desktop\petting-zoo\dist\rosenfeldranch-godaddy.zip`
 
-Upload contents into the site **document root** (often `public_html` or the domain folder).
-Overwrite the “Launching Soon” files. Keep `index.html` at the root.
+1. Log into GoDaddy → your domain **rosenfeldranch.com** → Hosting → File Manager (or cPanel).
+2. Open the site document root (`public_html` / domain root).
+3. Delete or rename the current “Launching Soon” files.
+4. Upload and extract `rosenfeldranch-godaddy.zip` so `index.html` sits at the root.
+5. Visit https://rosenfeldranch.com and hard-refresh.
 
 ## Do NOT upload
 - `api/`
@@ -12,16 +15,12 @@ Overwrite the “Launching Soon” files. Keep `index.html` at the root.
 - `.env` / secrets
 - `images/_pretrim/`
 - `scripts/`
-- `dist/` itself (upload the zip contents)
 
-## DNS
-Point `rosenfeldranch.com` (and `www` if used) at this GoDaddy hosting.
+## Live API (already deployed)
+- Health: https://rosenfeld-ranch-api.onrender.com/api/health
+- Dashboard: https://dashboard.render.com/web/srv-d9k094pt0dsc738m7k8g
+- Site JS already points `apiBaseUrl` at this Render URL.
 
-## API (Render)
-Live API expected at: `https://rosenfeld-ranch-api.onrender.com`
-
-After Render is live, confirm:
-`https://rosenfeld-ranch-api.onrender.com/api/health`
-
-## First booking email
-FormSubmit may email an “Activate Form” link to `therosenfeldranch@gmail.com` for the new domain Origin — click it once.
+## After swap
+- First booking/newsletter may need a FormSubmit “Activate Form” click in `therosenfeldranch@gmail.com` (check spam).
+- Free Render apps sleep after idle — first request can take ~30s to wake.
