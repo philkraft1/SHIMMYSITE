@@ -3,6 +3,7 @@ require("dotenv").config();
 const crypto = require("crypto");
 const cors = require("cors");
 const express = require("express");
+const rateLimit = require("express-rate-limit");
 const { SquareClient, SquareEnvironment, SquareError } = require("square");
 const { catalog, getCatalogItem } = require("./catalog");
 const {
@@ -39,8 +40,42 @@ const sitePublicUrl = (
   process.env.SITE_PUBLIC_URL || "https://rosenfeldranch.com"
 ).replace(/\/$/, "");
 
+const PRODUCTION_ORIGINS = new Set([
+  "https://rosenfeldranch.com",
+  "https://www.rosenfeldranch.com",
+]);
+
+function isLocalDevOrigin(origin) {
+  try {
+    const u = new URL(origin);
+    if (u.protocol !== "http:" && u.protocol !== "https:") return false;
+    return u.hostname === "localhost" || u.hostname === "127.0.0.1";
+  } catch {
+    return false;
+  }
+}
+
+function isAllowedOrigin(origin) {
+  if (!origin) return true; // same-origin / curl / health checks
+  return PRODUCTION_ORIGINS.has(origin) || isLocalDevOrigin(origin);
+}
+
 const app = express();
-app.use(cors({ origin: true }));
+// Trust Render / reverse-proxy so rate limits key on real client IP.
+app.set("trust proxy", 1);
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (isAllowedOrigin(origin)) {
+        callback(null, true);
+      } else {
+        callback(null, false);
+      }
+    },
+    // Frontend fetch calls do not send cookies; keep credentials off.
+    credentials: false,
+  })
+);
 app.use((req, res, next) => {
   const largePhotoPost =
     req.method === "POST" &&
@@ -48,6 +83,50 @@ app.use((req, res, next) => {
       String(req.url || "").split("?")[0] === "/api/experiences");
   return express.json({ limit: largePhotoPost ? "22mb" : "64kb" })(req, res, next);
 });
+
+function rateLimitHandler(_req, res) {
+  res.status(429).json({
+    error: "Too many requests from this connection. Please try again later.",
+  });
+}
+
+const newsletterLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 8,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: rateLimitHandler,
+});
+
+const bookingsLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: rateLimitHandler,
+});
+
+const checkoutLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: rateLimitHandler,
+});
+
+const experiencesLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: rateLimitHandler,
+});
+
+/** Silent honeypot: bots that fill hidden fields get a fake success. */
+function isHoneypotTripped(body) {
+  const honey = body && (body._honey ?? body.honey ?? body.website);
+  return typeof honey === "string" && honey.trim().length > 0;
+}
 
 function requireAdmin(req, res) {
   if (!adminKey) {
@@ -290,7 +369,10 @@ app.get("/api/instagram/media", async (req, res) => {
   }
 });
 
-app.post("/api/newsletter", async (req, res) => {
+app.post("/api/newsletter", newsletterLimiter, async (req, res) => {
+  if (isHoneypotTripped(req.body)) {
+    return res.json({ ok: true, recurring: false });
+  }
   const email = req.body?.email;
   const source = req.body?.source || "homepage-newsletter";
 
@@ -365,7 +447,14 @@ function asDateOnly(value) {
   return String(value).slice(0, 10);
 }
 
-app.post("/api/bookings", async (req, res) => {
+app.post("/api/bookings", bookingsLimiter, async (req, res) => {
+  if (isHoneypotTripped(req.body)) {
+    return res.status(201).json({
+      ok: true,
+      emailSent: false,
+      booking: { id: null, status: "received" },
+    });
+  }
   try {
     const booking = await createBooking(req.body || {});
     const dateOnly = asDateOnly(booking.booking_date);
@@ -453,31 +542,6 @@ app.delete("/api/blog/:id", async (req, res) => {
   }
 });
 
-/** Simple in-memory rate limit for public experience submissions. */
-const experienceSubmitHits = new Map();
-const EXPERIENCE_RATE_WINDOW_MS = 15 * 60 * 1000;
-const EXPERIENCE_RATE_MAX = 5;
-
-function clientIp(req) {
-  const forwarded = String(req.headers["x-forwarded-for"] || "")
-    .split(",")[0]
-    .trim();
-  return forwarded || req.ip || req.socket?.remoteAddress || "unknown";
-}
-
-function checkExperienceRateLimit(ip) {
-  const now = Date.now();
-  const key = String(ip || "unknown");
-  const existing = experienceSubmitHits.get(key) || [];
-  const recent = existing.filter((t) => now - t < EXPERIENCE_RATE_WINDOW_MS);
-  if (recent.length >= EXPERIENCE_RATE_MAX) {
-    return false;
-  }
-  recent.push(now);
-  experienceSubmitHits.set(key, recent);
-  return true;
-}
-
 app.get("/api/experiences", async (req, res) => {
   try {
     const kind = String(req.query.kind || "").trim().toLowerCase();
@@ -503,16 +567,16 @@ app.get("/api/experiences/:id/photos/:index", async (req, res) => {
   }
 });
 
-app.post("/api/experiences", async (req, res) => {
-  const ip = clientIp(req);
-  if (!checkExperienceRateLimit(ip)) {
-    return res.status(429).json({
-      error: "Too many submissions from this connection. Please try again later.",
-    });
-  }
-
+app.post("/api/experiences", experiencesLimiter, async (req, res) => {
   try {
     const body = req.body || {};
+    if (isHoneypotTripped(body)) {
+      return res.status(201).json({
+        ok: true,
+        item: null,
+        limits: { maxPhotos: MAX_PHOTOS, maxBytesPerPhoto: MAX_BYTES },
+      });
+    }
     assertCleanText({
       name: body.name,
       title: body.title,
@@ -546,7 +610,7 @@ app.get("/api/config", (_req, res) => {
   });
 });
 
-app.post("/api/checkout/:itemId", async (req, res) => {
+app.post("/api/checkout/:itemId", checkoutLimiter, async (req, res) => {
   const item = getCatalogItem(req.params.itemId);
   if (!item) {
     return res.status(404).json({ error: "Unknown item." });
