@@ -87,12 +87,6 @@ MAPPING = {
         "Highland cow and other cattle gathered under a wooden shade shelter",
         0,
     ),
-    "IMG_9548.png": (
-        "shaggy-longhorn-cow.jpg",
-        ["cows"],
-        "Shaggy black-and-white longhorn cow standing in a muddy paddock",
-        0,
-    ),
     # Goats
     "IMG_9507.png": (
         "blue-eyed-goat-tunnel.jpg",
