@@ -2,6 +2,9 @@
   var config = window.SQUARE_CONFIG;
   if (!config || !config.items) return;
 
+  var QTY_MIN = 1;
+  var QTY_MAX = 20;
+
   function isConfigured() {
     if (config.checkoutMode === "static") {
       return Object.keys(config.items).some(function (id) {
@@ -33,11 +36,96 @@
     }
   }
 
-  async function createCheckoutLink(itemId) {
+  function formatMoney(cents) {
+    return "$" + (cents / 100).toFixed(cents % 100 === 0 ? 0 : 2);
+  }
+
+  function readQuantity(btn) {
+    var root = btn.closest("[data-square-qty-root]") || btn.parentElement;
+    var input = root && root.querySelector("[data-square-qty]");
+    if (!input) return 1;
+    var n = Number.parseInt(input.value, 10);
+    if (!Number.isFinite(n) || n < QTY_MIN) return QTY_MIN;
+    if (n > QTY_MAX) return QTY_MAX;
+    return n;
+  }
+
+  function updateQtyDisplay(root) {
+    var input = root.querySelector("[data-square-qty]");
+    var totalEl = root.querySelector("[data-square-qty-total]");
+    var btn = root.querySelector("[data-square-item]");
+    if (!input || !btn) return;
+
+    var item = getItem(btn.getAttribute("data-square-item"));
+    var qty = readQuantity(btn);
+    input.value = String(qty);
+
+    var dec = root.querySelector("[data-qty-dec]");
+    var inc = root.querySelector("[data-qty-inc]");
+    if (dec) dec.disabled = qty <= QTY_MIN;
+    if (inc) inc.disabled = qty >= QTY_MAX;
+
+    if (totalEl && item && typeof item.amountCents === "number") {
+      totalEl.textContent = formatMoney(item.amountCents * qty);
+      totalEl.hidden = false;
+    }
+  }
+
+  function mountQtyControl(btn) {
+    if (btn.closest("[data-square-qty-root]")) return;
+    if (btn.getAttribute("data-square-qty") === "false") return;
+
+    var wrap = document.createElement("div");
+    wrap.className = "square-qty-root";
+    wrap.setAttribute("data-square-qty-root", "");
+
+    var row = document.createElement("div");
+    row.className = "square-qty";
+    row.innerHTML =
+      '<span class="square-qty-label">Qty</span>' +
+      '<div class="square-qty-control" role="group" aria-label="Quantity">' +
+      '<button type="button" class="square-qty-btn" data-qty-dec aria-label="Decrease quantity">\u2212</button>' +
+      '<input class="square-qty-input" type="number" inputmode="numeric" min="' +
+      QTY_MIN +
+      '" max="' +
+      QTY_MAX +
+      '" value="1" data-square-qty aria-label="Quantity" />' +
+      '<button type="button" class="square-qty-btn" data-qty-inc aria-label="Increase quantity">+</button>' +
+      "</div>" +
+      '<span class="square-qty-total" data-square-qty-total hidden></span>';
+
+    btn.parentNode.insertBefore(wrap, btn);
+    wrap.appendChild(row);
+    wrap.appendChild(btn);
+
+    var input = row.querySelector("[data-square-qty]");
+    row.querySelector("[data-qty-dec]").addEventListener("click", function () {
+      input.value = String(Math.max(QTY_MIN, readQuantity(btn) - 1));
+      updateQtyDisplay(wrap);
+    });
+    row.querySelector("[data-qty-inc]").addEventListener("click", function () {
+      input.value = String(Math.min(QTY_MAX, readQuantity(btn) + 1));
+      updateQtyDisplay(wrap);
+    });
+    input.addEventListener("change", function () {
+      updateQtyDisplay(wrap);
+    });
+    input.addEventListener("input", function () {
+      updateQtyDisplay(wrap);
+    });
+
+    updateQtyDisplay(wrap);
+  }
+
+  async function createCheckoutLink(itemId, quantity) {
     var base = (config.apiBaseUrl || "").replace(/\/$/, "");
     var res = await fetch(base + "/api/checkout/" + encodeURIComponent(itemId), {
       method: "POST",
-      headers: { Accept: "application/json" },
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ quantity: quantity }),
     });
     var data = await res.json().catch(function () {
       return {};
@@ -48,16 +136,17 @@
     return data.url;
   }
 
-  async function startCheckout(itemId, btn) {
+  async function startCheckout(itemId, btn, quantity) {
     var item = getItem(itemId);
     if (!item) return;
 
+    var qty = quantity || 1;
     var url = item.paymentLinkUrl;
 
     if (config.checkoutMode === "api") {
       setLoading(btn, true);
       try {
-        url = await createCheckoutLink(itemId);
+        url = await createCheckoutLink(itemId, qty);
       } catch (err) {
         setLoading(btn, false);
         window.alert(err.message || "Checkout is not available yet.");
@@ -91,9 +180,10 @@
 
       if (hasStaticLink || hasApi) {
         enableButton(btn, btn.getAttribute("data-square-label") || "Pay online");
+        if (hasApi) mountQtyControl(btn);
         btn.addEventListener("click", function (e) {
           e.preventDefault();
-          startCheckout(itemId, btn);
+          startCheckout(itemId, btn, readQuantity(btn));
         });
       } else if (ready === false) {
         btn.setAttribute("aria-disabled", "true");
@@ -108,7 +198,7 @@
       link.href = "#admission";
       link.addEventListener("click", function (e) {
         e.preventDefault();
-        startCheckout("admission", link);
+        startCheckout("admission", link, 1);
       });
     });
   }
