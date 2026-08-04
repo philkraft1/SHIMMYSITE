@@ -2534,3 +2534,66 @@ body.showcase-lightbox-open {
     animation: none;
   }
 }
+
+/* Privacy / legal document */
+.legal-meta {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.legal-doc {
+  max-width: 42rem;
+  margin: 0 auto;
+  display: grid;
+  gap: 0.85rem;
+  line-height: 1.65;
+  color: var(--text, #e8eaed);
+}
+
+.legal-doc h2 {
+  margin: 1.35rem 0 0.15rem;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.legal-doc p,
+.legal-doc li {
+  color: var(--text-muted, #b8c0c8);
+}
+
+.legal-doc ul {
+  margin: 0.2rem 0 0.4rem;
+  padding-left: 1.2rem;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.legal-doc a {
+  color: #9fe0e1;
+}
+
+.legal-doc a:hover {
+  color: #c6f4f5;
+}
+
+.legal-contact {
+  font-style: normal;
+  line-height: 1.7;
+  color: var(--text-muted, #b8c0c8);
+  padding: 1rem 1.15rem;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.14));
+  border-radius: var(--radius, 10px);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.footer-bottom a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.footer-bottom a:hover {
+  color: #9fe0e1;
+}
