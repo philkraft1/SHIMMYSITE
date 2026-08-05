@@ -1,0 +1,20 @@
+{
+  "name": "Rosenfeld Ranch",
+  "install": "cd api && npm install",
+  "terminals": [
+    {
+      "name": "api",
+      "command": "cd api && npm start",
+      "description": "Rosenfeld Ranch Express API on http://localhost:3001 (uses local node:sqlite when DATABASE_URL is unset). Serves /api/health, newsletter, bookings, blog, experiences, and Square checkout."
+    },
+    {
+      "name": "web",
+      "command": "python3 -m http.server 5504",
+      "description": "Static site server for the frontend on http://localhost:5504 (index.html, ranch.html, village.html, reviews.html, etc.)."
+    }
+  ],
+  "ports": [
+    { "name": "api", "port": 3001 },
+    { "name": "web", "port": 5504 }
+  ]
+}
