@@ -68,6 +68,7 @@
           <p class="lead">
             Hours, safety rules, and what to know before you arrive.
           </p>
+          <div class="hours-panel" data-hours="both" aria-label="Location hours"></div>
         </div>
       </section>
 
@@ -87,6 +88,13 @@
                 <dt>Phone / WhatsApp</dt>
                 <dd>
                   <a href="tel:9293262188">(929) 326-2188</a>
+                </dd>
+              </div>
+              <div>
+                <dt>Hours</dt>
+                <dd>
+                  Same schedule at both locations:
+                  <div data-hours="schedule" aria-label="Operating hours"></div>
                 </dd>
               </div>
               <div>
@@ -209,6 +217,7 @@
     </footer>
 
     <script src="nav.js"></script>
+    <script src="hours.js"></script>
     <script>
       document.getElementById("year").textContent = new Date().getFullYear();
     </script>

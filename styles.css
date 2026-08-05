@@ -261,11 +261,12 @@ h3 {
 
 .splash-actions {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 240px));
+  grid-template-columns: repeat(2, minmax(0, 280px));
   gap: 0.85rem;
-  width: min(100%, 520px);
+  width: min(100%, 600px);
   margin-top: 0.35rem;
   animation: splashRise 1.1s ease-out 0.22s both;
+  align-items: stretch;
 }
 
 .splash-btn {
@@ -274,7 +275,7 @@ h3 {
   align-items: center;
   justify-content: center;
   gap: 0.35rem;
-  min-height: 5.25rem;
+  min-height: 0;
   font-size: 1.2rem;
   font-family: var(--font-display);
   font-weight: 500;
@@ -292,6 +293,33 @@ h3 {
   letter-spacing: 0.06em;
   text-transform: uppercase;
   opacity: 0.78;
+}
+
+.splash-btn .splash-hours {
+  margin-top: 0.35rem;
+  width: 100%;
+  text-align: center;
+}
+
+.splash-btn .hours-block__title {
+  display: none;
+}
+
+.splash-btn .hours-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  line-height: 1.35;
+  opacity: 0.9;
+}
+
+.splash-btn .hours-list__closed {
+  opacity: 0.65;
 }
 
 .splash-page .btn-primary {
@@ -1528,9 +1556,89 @@ a.btn.is-disabled {
 
 .footer-grid {
   display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr;
+  grid-template-columns: 1.4fr 1fr 1fr 1.2fr;
   gap: 2rem;
   margin-bottom: 2.25rem;
+}
+
+/* Shared hours blocks */
+.hours-block {
+  margin: 0;
+}
+
+.hours-block__title {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin: 0 0 0.4rem;
+  color: inherit;
+}
+
+.hours-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.hours-list li {
+  margin-bottom: 0.15rem;
+}
+
+.hours-list__closed {
+  opacity: 0.72;
+}
+
+.hours-both {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.hours-panel {
+  margin-top: 1rem;
+  padding: 1rem 1.15rem;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.page-hero .hours-panel {
+  max-width: 28rem;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+}
+
+.page-hero .hours-block__title,
+.page-hero .hours-list {
+  color: #ffffff;
+}
+
+.info-panel .hours-block {
+  margin-top: 0.25rem;
+}
+
+.footer-hours .hours-block + .hours-block {
+  margin-top: 1rem;
+}
+
+.footer-hours .hours-block__title {
+  color: #ffffff;
+}
+
+.footer-hours .hours-list {
+  color: #969696;
+  font-size: 0.88rem;
+}
+
+@media (max-width: 960px) {
+  .hours-both {
+    grid-template-columns: 1fr;
+  }
 }
 
 .site-footer .logo-text {
