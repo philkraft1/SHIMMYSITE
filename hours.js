@@ -5,8 +5,7 @@
 (function () {
   var LINES = [
     "Sun 12pm–6pm",
-    "Mon–Wed 3pm–7pm",
-    "Thu Closed",
+    "Mon–Thu 3pm–7pm",
     "Fri 12pm–4pm",
     "Sat Closed",
   ];
@@ -75,8 +74,7 @@
       villageCol.className = "footer-hours footer-hours--village";
       villageCol.innerHTML = "<h4>Village Hours</h4>" + scheduleListHtml();
 
-      // Append after logo / Explore / Find us so hours sit on the right
-      // (opposite the brand mark / portrait side on the left).
+      // Right side of footer (opposite brand mark on the left)
       grid.appendChild(ranchCol);
       grid.appendChild(villageCol);
     });
