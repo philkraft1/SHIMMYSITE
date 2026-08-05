@@ -659,8 +659,11 @@ async function createExperience(input) {
      VALUES (?, ?, ?, ?, ?, ?)`
   );
 
+  // node:sqlite's DatabaseSync has no .transaction() helper (unlike better-sqlite3),
+  // so drive the transaction manually with BEGIN/COMMIT/ROLLBACK.
   let experienceId;
-  const tx = sqlite.transaction(() => {
+  sqlite.exec("BEGIN");
+  try {
     const result = insertExp.run(
       kind,
       name,
@@ -681,8 +684,13 @@ async function createExperience(input) {
         now
       );
     }
-  });
-  tx();
+    sqlite.exec("COMMIT");
+  } catch (err) {
+    try {
+      sqlite.exec("ROLLBACK");
+    } catch (_) {}
+    throw err;
+  }
 
   return mapExperienceRow(
     sqlite
