@@ -295,33 +295,6 @@ h3 {
   opacity: 0.78;
 }
 
-.splash-btn .splash-hours {
-  margin-top: 0.35rem;
-  width: 100%;
-  text-align: center;
-}
-
-.splash-btn .hours-block__title {
-  display: none;
-}
-
-.splash-btn .hours-list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  font-family: var(--font-body);
-  font-size: 0.68rem;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  text-transform: none;
-  line-height: 1.35;
-  opacity: 0.9;
-}
-
-.splash-btn .hours-list__closed {
-  opacity: 0.65;
-}
-
 .splash-page .btn-primary {
   background: #ffffff;
   color: #000000;
@@ -1556,7 +1529,7 @@ a.btn.is-disabled {
 
 .footer-grid {
   display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr 1.2fr;
+  grid-template-columns: 1.4fr 1fr 1fr 0.95fr 0.95fr;
   gap: 2rem;
   margin-bottom: 2.25rem;
 }
@@ -1577,15 +1550,16 @@ a.btn.is-disabled {
 }
 
 .hours-list {
-  list-style: none;
   margin: 0;
   padding: 0;
+  list-style: none;
   font-size: 0.9rem;
   line-height: 1.45;
 }
 
-.hours-list li {
-  margin-bottom: 0.15rem;
+.hours-list__line {
+  margin: 0 0 0.15rem;
+  padding: 0;
 }
 
 .hours-list__closed {
@@ -1620,14 +1594,6 @@ a.btn.is-disabled {
 
 .info-panel .hours-block {
   margin-top: 0.25rem;
-}
-
-.footer-hours .hours-block + .hours-block {
-  margin-top: 1rem;
-}
-
-.footer-hours .hours-block__title {
-  color: #ffffff;
 }
 
 .footer-hours .hours-list {

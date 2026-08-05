@@ -1,6 +1,6 @@
 /**
  * Shared Ranch & Village operating hours.
- * Fills [data-hours] placeholders and injects a footer Hours column.
+ * Fills [data-hours] placeholders and injects two footer hours columns.
  */
 (function () {
   var LINES = [
@@ -13,18 +13,18 @@
 
   function scheduleListHtml() {
     return (
-      '<ul class="hours-list">' +
+      '<div class="hours-list">' +
       LINES.map(function (line) {
         var closed = /closed/i.test(line);
         return (
-          '<li' +
-          (closed ? ' class="hours-list__closed"' : "") +
-          ">" +
+          '<div class="hours-list__line' +
+          (closed ? " hours-list__closed" : "") +
+          '">' +
           line +
-          "</li>"
+          "</div>"
         );
       }).join("") +
-      "</ul>"
+      "</div>"
     );
   }
 
@@ -66,15 +66,19 @@
   function injectFooterHours() {
     document.querySelectorAll(".site-footer .footer-grid").forEach(function (grid) {
       if (grid.querySelector(".footer-hours")) return;
-      var col = document.createElement("div");
-      col.className = "footer-hours";
-      col.innerHTML =
-        "<h4>Hours</h4>" +
-        '<div class="footer-hours__locations">' +
-        blockHtml("Ranch") +
-        blockHtml("The Village") +
-        "</div>";
-      grid.appendChild(col);
+
+      var ranchCol = document.createElement("div");
+      ranchCol.className = "footer-hours footer-hours--ranch";
+      ranchCol.innerHTML = "<h4>Ranch Hours</h4>" + scheduleListHtml();
+
+      var villageCol = document.createElement("div");
+      villageCol.className = "footer-hours footer-hours--village";
+      villageCol.innerHTML = "<h4>Village Hours</h4>" + scheduleListHtml();
+
+      // Append after logo / Explore / Find us so hours sit on the right
+      // (opposite the brand mark / portrait side on the left).
+      grid.appendChild(ranchCol);
+      grid.appendChild(villageCol);
     });
   }
 
