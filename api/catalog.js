@@ -37,6 +37,20 @@ const catalog = {
     name: "Mini Traveling Ranch experience (2 hours)",
     amountCents: 60000,
   },
+
+  // Village membership — monthly (first month via Quick Pay)
+  "membership-weekly": {
+    name: "Village Membership — Weekly (30 min \u00d7 4)",
+    amountCents: 6000,
+  },
+  "membership-family": {
+    name: "Village Membership — Family (up to 4)",
+    amountCents: 15000,
+  },
+  "membership-family-extra": {
+    name: "Village Membership — Extra family member",
+    amountCents: 4500,
+  },
 };
 
 function getCatalogItem(id) {

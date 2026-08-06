@@ -77,5 +77,17 @@ window.SQUARE_CONFIG = {
       amountCents: 1000,
       paymentLinkUrl: "https://square.link/u/6Ch7JwJY",
     },
+    "membership-weekly": {
+      name: "Village Membership — Weekly (30 min × 4)",
+      amountCents: 6000,
+    },
+    "membership-family": {
+      name: "Village Membership — Family (up to 4)",
+      amountCents: 15000,
+    },
+    "membership-family-extra": {
+      name: "Village Membership — Extra family member",
+      amountCents: 4500,
+    },
   },
 };

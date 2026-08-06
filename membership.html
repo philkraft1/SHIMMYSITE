@@ -12,10 +12,10 @@
     </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Membership — Rosenfeld Ranch</title>
+    <title>Village Membership — Rosenfeld Ranch</title>
     <meta
       name="description"
-      content="Rosenfeld Ranch membership — plans and member perks coming soon."
+      content="Village Puppy Room membership — weekly or family plans with monthly auto-rollover. Join online or call to ask."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -23,7 +23,7 @@
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=qty1" />
   </head>
   <body>
     <header class="site-header">
@@ -58,7 +58,7 @@
           </div>
           <a href="contact.html">Contact</a>
           <span class="nav-cta">
-            <a class="btn btn-primary" href="ranch.html#admission">Pay online</a>
+            <a class="btn btn-primary" href="#plans">Join online</a>
           </span>
         </nav>
       </div>
@@ -67,13 +67,128 @@
     <main>
       <section class="page-hero">
         <div class="wrap">
-          <p class="eyebrow">Member area</p>
+          <p class="eyebrow">The Village</p>
           <h1>Membership</h1>
           <p class="lead">
-            Member plans, perks, and sign-up will live here. Details coming
-            soon — call <a href="tel:9293262188">(929) 326-2188</a> to ask in
-            the meantime.
+            Monthly Puppy Room plans at The Village — one half-hour session a
+            week, auto-rollover. Pay your first month online, or call with
+            questions.
           </p>
+          <div class="btn-row">
+            <a class="btn btn-primary" href="#plans">See plans</a>
+            <a class="btn btn-secondary" href="tel:9293262188">(929) 326-2188</a>
+          </div>
+          <p class="note" style="margin-top: 1rem" data-square-status></p>
+        </div>
+      </section>
+
+      <div id="checkout-success" class="checkout-success" hidden>
+        <div class="wrap">
+          <p class="checkout-success__title">Payment received — welcome to membership</p>
+          <p class="checkout-success__body">
+            We’ll confirm your Village plan shortly. Questions?
+            <a href="tel:9293262188">(929) 326-2188</a>
+          </p>
+        </div>
+      </div>
+
+      <section class="section section--tight" id="plans">
+        <div class="wrap">
+          <div class="section-head">
+            <p class="eyebrow">Village Puppy Room</p>
+            <h2>Choose your plan</h2>
+            <p class="lead">
+              Both plans include four 30-minute sessions per month and renew
+              automatically. First month paid online with Square.
+            </p>
+          </div>
+          <div class="price-grid">
+            <article class="price-card">
+              <span class="tag">Auto-rollover</span>
+              <h3>Weekly Member</h3>
+              <p class="price">$60 <small>/ month</small></p>
+              <p>
+                One guest · one 30-minute session per week · 4 sessions each
+                month at The Village.
+              </p>
+              <button
+                class="btn btn-primary"
+                type="button"
+                data-square-item="membership-weekly"
+                data-square-label="Join Weekly Member"
+                data-square-qty="false"
+              >
+                Join for $60
+              </button>
+            </article>
+            <article class="price-card featured">
+              <span class="tag">Auto-rollover · Up to 4</span>
+              <h3>Family Package</h3>
+              <p class="price">$150 <small>/ month</small></p>
+              <p>
+                Up to 4 people (parents free) · four 30-minute sessions per
+                month. Perfect for sharing Village puppy time.
+              </p>
+              <button
+                class="btn btn-primary"
+                type="button"
+                data-square-item="membership-family"
+                data-square-label="Join Family Package"
+                data-square-qty="false"
+              >
+                Join for $150
+              </button>
+            </article>
+            <article class="price-card">
+              <span class="tag">Family add-on</span>
+              <h3>Extra family member</h3>
+              <p class="price">$45 <small>/ month each</small></p>
+              <p>
+                Add anyone beyond the 4 included in the Family Package. Use
+                quantity for multiple add-ons.
+              </p>
+              <button
+                class="btn btn-primary"
+                type="button"
+                data-square-item="membership-family-extra"
+                data-square-label="Add family member"
+              >
+                Add member · $45
+              </button>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section--sage">
+        <div class="wrap split">
+          <div>
+            <p class="eyebrow">Getting started</p>
+            <h2>How membership works</h2>
+            <ul class="checklist">
+              <li>Choose Weekly or Family and pay your first month online</li>
+              <li>We confirm your plan and how to book Village sessions</li>
+              <li>Visit during Village hours — four half-hour visits each month</li>
+              <li>Membership renews monthly (auto-rollover)</li>
+              <li>Call to pause, cancel, or change who’s on the plan</li>
+            </ul>
+          </div>
+          <div>
+            <p class="eyebrow">Questions?</p>
+            <h2>We’re happy to help</h2>
+            <p class="lead">
+              Not sure which plan fits, or need to add family members after you
+              join? Reach out — we’ll sort it out.
+            </p>
+            <div class="btn-row">
+              <a class="btn btn-primary" href="tel:9293262188">Call (929) 326-2188</a>
+              <a class="btn btn-secondary" href="contact.html">Contact form</a>
+            </div>
+            <p class="note" style="margin-top: 1rem">
+              The Village · 1368 River Ave, Lakewood, NJ ·
+              <a href="village.html">Village page &amp; walk-in rates</a>
+            </p>
+          </div>
         </div>
       </section>
     </main>
@@ -127,6 +242,8 @@
       </div>
     </footer>
 
+    <script src="square.config.js"></script>
+    <script src="square-checkout.js?v=qty1"></script>
     <script src="nav.js"></script>
     <script src="hours.js"></script>
     <script>
