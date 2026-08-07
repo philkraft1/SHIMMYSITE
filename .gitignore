@@ -6,3 +6,4 @@ api/node_modules/
 api/RENDER_URL.txt
 dist/
 images/_pretrim/
+scripts/__pycache__/
