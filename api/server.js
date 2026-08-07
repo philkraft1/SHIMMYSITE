@@ -635,7 +635,7 @@ app.post("/api/checkout/:itemId", checkoutLimiter, async (req, res) => {
     : { askForShippingAddress: false };
 
   const lineName =
-    quantity > 1 ? `${item.name} \u00d7 ${quantity}` : item.name;
+    quantity > 1 ? `${item.name} x ${quantity}` : item.name;
 
   try {
     // Quick Pay has no quantity field — charge unit price × qty and label
