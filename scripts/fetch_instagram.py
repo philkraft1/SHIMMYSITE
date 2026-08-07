@@ -72,6 +72,10 @@ def parse_posts(page: str) -> list[dict]:
         # skip junk labels
         if cap.lower().startswith("images or videos"):
             continue
+        # Imginn appends its media-type label to the caption; it is not the caption.
+        cap = re.sub(r"\s*images or videos\s*$", "", cap, flags=re.I).strip()
+        if not cap:
+            continue
         captions[m.group(2).split("?")[0]] = cap[:280]
 
     for post in posts:
