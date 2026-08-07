@@ -18,21 +18,28 @@
     return config.items[id] || null;
   }
 
+  // Buttons like the membership splash tiles carry their own markup
+  // (title + <span> sub-line); replacing textContent would flatten them.
+  function hasMarkup(btn) {
+    return btn.children.length > 0;
+  }
+
   function enableButton(btn, label) {
     btn.classList.remove("is-disabled");
     btn.removeAttribute("disabled");
     btn.removeAttribute("aria-disabled");
-    if (label) btn.textContent = label;
+    if (label && !hasMarkup(btn)) btn.textContent = label;
   }
 
   function setLoading(btn, loading) {
     btn.disabled = loading;
     btn.setAttribute("aria-busy", loading ? "true" : "false");
     if (loading) {
-      btn.dataset.squareLabel = btn.textContent;
+      btn.squareRestoreHtml = btn.innerHTML;
       btn.textContent = "Opening checkout…";
-    } else if (btn.dataset.squareLabel) {
-      btn.textContent = btn.dataset.squareLabel;
+    } else if (btn.squareRestoreHtml != null) {
+      btn.innerHTML = btn.squareRestoreHtml;
+      btn.squareRestoreHtml = null;
     }
   }
 
@@ -42,7 +49,7 @@
 
   function readQuantity(btn) {
     var root = btn.closest("[data-square-qty-root]") || btn.parentElement;
-    var input = root && root.querySelector("[data-square-qty]");
+    var input = root && root.querySelector("input[data-square-qty]");
     if (!input) return 1;
     var n = Number.parseInt(input.value, 10);
     if (!Number.isFinite(n) || n < QTY_MIN) return QTY_MIN;
@@ -51,7 +58,7 @@
   }
 
   function updateQtyDisplay(root) {
-    var input = root.querySelector("[data-square-qty]");
+    var input = root.querySelector("input[data-square-qty]");
     var totalEl = root.querySelector("[data-square-qty-total]");
     var btn = root.querySelector("[data-square-item]");
     if (!input || !btn) return;
