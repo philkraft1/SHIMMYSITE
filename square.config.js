@@ -33,32 +33,32 @@ window.SQUARE_CONFIG = {
       paymentLinkUrl: "https://square.link/u/yRBBL3E6",
     },
     "puppies-weekday-20": {
-      name: "The Village Puppy Room — Mon–Thu, 20 minutes",
+      name: "The Village Puppy Room - Mon-Thu, 20 minutes",
       amountCents: 1500,
       paymentLinkUrl: "https://square.link/u/ysJkxobD",
     },
     "puppies-weekday-30": {
-      name: "The Village Puppy Room — Mon–Thu, 30 minutes",
+      name: "The Village Puppy Room - Mon-Thu, 30 minutes",
       amountCents: 2500,
       paymentLinkUrl: "https://square.link/u/xLkYptm9",
     },
     "puppies-weekend-20": {
-      name: "The Village Puppy Room — Fri & Sun, 20 minutes",
+      name: "The Village Puppy Room - Fri & Sun, 20 minutes",
       amountCents: 2000,
       paymentLinkUrl: "https://square.link/u/ozeQTnAI",
     },
     "puppies-weekend-30": {
-      name: "The Village Puppy Room — Fri & Sun, 30 minutes",
+      name: "The Village Puppy Room - Fri & Sun, 30 minutes",
       amountCents: 3000,
       paymentLinkUrl: "https://square.link/u/lgrmN8lA",
     },
     "traveling-deposit": {
-      name: "Traveling Ranch — booking deposit",
+      name: "Traveling Ranch - booking deposit",
       amountCents: 10000,
       paymentLinkUrl: "https://square.link/u/CE5OhzY8",
     },
     "traveling-standard": {
-      name: "Traveling Ranch — standard package (2 hours)",
+      name: "Traveling Ranch - standard package (2 hours)",
       amountCents: 100000,
       paymentLinkUrl: "https://square.link/u/3VD3FW6z",
     },
@@ -78,15 +78,15 @@ window.SQUARE_CONFIG = {
       paymentLinkUrl: "https://square.link/u/6Ch7JwJY",
     },
     "membership-weekly": {
-      name: "Village Membership — Weekly (30 min × 4)",
+      name: "Village Membership - Weekly (30 min x 4)",
       amountCents: 6000,
     },
     "membership-family": {
-      name: "Village Membership — Family (up to 4)",
+      name: "Village Membership - Family (up to 4)",
       amountCents: 15000,
     },
     "membership-family-extra": {
-      name: "Village Membership — Extra family member",
+      name: "Village Membership - Extra family member",
       amountCents: 4500,
     },
   },

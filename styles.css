@@ -368,10 +368,9 @@ h3 {
 
 /* Membership plan gate — same twin buttons as the home splash */
 .membership-gate {
-  min-height: calc(100vh - 4.5rem);
   display: grid;
   place-items: center;
-  padding: 3rem 1.25rem 4rem;
+  padding: 2.5rem 1.25rem 3rem;
   background:
     radial-gradient(ellipse 80% 55% at 50% 20%, rgba(0, 164, 166, 0.18), transparent 60%),
     #000000;
