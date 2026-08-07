@@ -5,11 +5,14 @@ from __future__ import annotations
 import json
 import re
 import html as htmlmod
+import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
-OUT = Path(__file__).resolve().parents[1] / "instagram-posts.json"
+ROOT = Path(__file__).resolve().parents[1]
+OUT = ROOT / "instagram-posts.json"
+IMAGE_DIR = ROOT / "images" / "instagram"
 USERNAME = "the_rosenfeld_ranch"
 URL = f"https://www.imginn.com/{USERNAME}/"
 UA = (
@@ -69,6 +72,10 @@ def parse_posts(page: str) -> list[dict]:
         # skip junk labels
         if cap.lower().startswith("images or videos"):
             continue
+        # Imginn appends its media-type label to the caption; it is not the caption.
+        cap = re.sub(r"\s*images or videos\s*$", "", cap, flags=re.I).strip()
+        if not cap:
+            continue
         captions[m.group(2).split("?")[0]] = cap[:280]
 
     for post in posts:
@@ -101,20 +108,58 @@ def parse_posts(page: str) -> list[dict]:
     return posts
 
 
+def download_image(remote: str, shortcode: str) -> str | None:
+    """Cache a still locally; Instagram CDN links are signed and expire."""
+    IMAGE_DIR.mkdir(parents=True, exist_ok=True)
+    dest = IMAGE_DIR / f"{shortcode}.jpg"
+    resized = (
+        "https://wsrv.nl/?url="
+        + urllib.parse.quote(remote, safe="")
+        + "&w=800&h=800&fit=cover&output=jpg&q=82"
+    )
+    for url in (resized, remote):
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": UA})
+            with urllib.request.urlopen(req, timeout=45) as r:
+                data = r.read()
+            if len(data) > 5000:
+                dest.write_bytes(data)
+                return f"images/instagram/{shortcode}.jpg"
+        except Exception as exc:  # noqa: BLE001
+            print(f"  image fetch failed for {shortcode}: {exc}")
+    return None
+
+
 def main() -> None:
     html = fetch(URL)
     posts = parse_posts(html)
+
+    cached = []
+    for post in posts:
+        local = download_image(post["image"], post["id"])
+        if not local:
+            continue
+        cached.append(
+            {
+                "id": post["id"],
+                "permalink": post["permalink"],
+                "image": local,
+                "remoteImage": post["image"],
+                "caption": post["caption"],
+            }
+        )
+
     payload = {
         "username": USERNAME,
         "profileUrl": f"https://www.instagram.com/{USERNAME}/",
         "source": "imginn",
         "updatedAt": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
-        "posts": posts,
+        "posts": cached,
     }
-    OUT.write_text(json.dumps(payload, indent=2), encoding="utf-8")
-    print(f"Wrote {len(posts)} posts to {OUT}")
-    for p in posts[:3]:
-        print(p["id"], (p["caption"] or "")[:40], p["image"][:70])
+    OUT.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    print(f"Wrote {len(cached)} posts to {OUT}")
+    for p in cached[:3]:
+        print(p["id"], (p["caption"] or "")[:40], p["image"])
 
 
 if __name__ == "__main__":
