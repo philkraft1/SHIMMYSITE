@@ -365,6 +365,80 @@ h3 {
   }
 }
 
+/* Membership plans on Village (under hours) — twin splash buttons */
+.membership-gate {
+  display: grid;
+  place-items: center;
+  padding: 2.5rem 1.25rem 3rem;
+  background:
+    radial-gradient(ellipse 80% 55% at 50% 20%, rgba(0, 164, 166, 0.18), transparent 60%),
+    #000000;
+  color: #ffffff;
+}
+
+.membership-gate__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(100%, 640px);
+  text-align: center;
+}
+
+.membership-gate .splash-tag {
+  margin: 0 0 1.1rem;
+  animation: none;
+}
+
+.membership-gate .splash-actions {
+  margin-top: 0;
+  animation: none;
+  width: min(100%, 600px);
+  grid-template-columns: repeat(2, minmax(0, 280px));
+  justify-content: center;
+}
+
+.membership-gate .splash-btn {
+  width: 100%;
+  cursor: pointer;
+  border-style: solid;
+  border-width: 1px;
+  animation: none;
+}
+
+.membership-gate .btn-primary {
+  background: #ffffff;
+  color: #000000;
+  border-color: #ffffff;
+}
+
+.membership-gate .btn-primary:hover {
+  background: #ffffff;
+  border-color: #ffffff;
+  color: #000000;
+}
+
+.membership-gate .btn-secondary {
+  background: transparent;
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.45);
+}
+
+.membership-gate .btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.7);
+}
+
+.membership-gate__note {
+  margin-top: 1.35rem;
+  animation: none;
+}
+
+.membership-gate .splash-btn:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
 /* Booking calendar */
 .booking-layout {
   display: grid;
@@ -2014,4 +2088,200 @@ a.btn.is-disabled {
 .xp-stars:has(label:nth-child(4) input:checked) label:nth-child(-n + 4) span:not(.visually-hidden),
 .xp-stars:has(label:nth-child(5) input:checked) label:nth-child(-n + 5) span:not(.visually-hidden) {
   color: var(--accent);
+}
+
+/* Square quantity steppers */
+.square-qty-root {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-top: auto;
+}
+
+.square-qty-root .btn {
+  margin-top: 0;
+  width: 100%;
+}
+
+.square-qty {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.square-qty-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted, #9aa3ad);
+}
+
+.square-qty-control {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--border-strong, rgba(255, 255, 255, 0.28));
+  border-radius: var(--radius-sm, 6px);
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.square-qty-btn {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  width: 2.1rem;
+  height: 2.1rem;
+  font-size: 1.15rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.square-qty-btn:hover:not(:disabled) {
+  background: var(--accent-soft, rgba(61, 184, 186, 0.18));
+  color: #9fe0e1;
+}
+
+.square-qty-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.square-qty-input {
+  width: 2.4rem;
+  height: 2.1rem;
+  border: 0;
+  border-left: 1px solid var(--border, rgba(255, 255, 255, 0.14));
+  border-right: 1px solid var(--border, rgba(255, 255, 255, 0.14));
+  background: transparent;
+  color: #fff;
+  text-align: center;
+  font: inherit;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  -moz-appearance: textfield;
+}
+
+.square-qty-input::-webkit-outer-spin-button,
+.square-qty-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.square-qty-total {
+  margin-left: auto;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #9fe0e1;
+  font-size: 0.95rem;
+}
+
+.square-qty-total::before {
+  content: "Total ";
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.68rem;
+  color: var(--muted, #9aa3ad);
+  margin-right: 0.35rem;
+}
+
+.price-card .square-qty-control {
+  background: rgba(0, 0, 0, 0.06);
+  border-color: rgba(0, 0, 0, 0.16);
+}
+
+.price-card .square-qty-btn {
+  color: var(--ink, #111);
+}
+
+.price-card .square-qty-btn:hover:not(:disabled) {
+  background: rgba(0, 164, 166, 0.12);
+  color: var(--accent, #00a4a6);
+}
+
+.price-card .square-qty-input {
+  color: var(--ink, #111);
+  border-left-color: rgba(0, 0, 0, 0.12);
+  border-right-color: rgba(0, 0, 0, 0.12);
+}
+
+.price-card .square-qty-total {
+  color: var(--accent, #00a4a6);
+}
+
+/* Shared Ranch / Village hours */
+.hours-block {
+  margin: 0;
+}
+
+.hours-block__title {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin: 0 0 0.4rem;
+  color: inherit;
+}
+
+.hours-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.hours-list__line {
+  margin: 0 0 0.15rem;
+  padding: 0;
+}
+
+.hours-list__closed {
+  opacity: 0.72;
+}
+
+.hours-both {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.hours-panel {
+  margin-top: 1rem;
+  padding: 1rem 1.15rem;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.page-hero .hours-panel {
+  max-width: 28rem;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+}
+
+.page-hero .hours-block__title,
+.page-hero .hours-list {
+  color: #ffffff;
+}
+
+.info-panel .hours-block {
+  margin-top: 0.25rem;
+}
+
+.footer-hours .hours-list {
+  color: #969696;
+  font-size: 0.88rem;
+}
+
+@media (max-width: 960px) {
+  .hours-both {
+    grid-template-columns: 1fr;
+  }
 }

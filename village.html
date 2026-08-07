@@ -37,7 +37,7 @@
               <a href="showcase.html" role="menuitem">Showcase</a>
               <a href="reviews.html" role="menuitem">Reviews</a>
               <a href="testimonials.html" role="menuitem">Testimonials</a>
-              <a href="membership.html" role="menuitem">Membership</a>
+              <a href="village.html#plans" role="menuitem">Membership</a>
               <a href="instagram.html" role="menuitem">Instagram</a>
               <a href="blog.html" role="menuitem">Blog</a>
             </div>
@@ -58,6 +58,38 @@
           <p class="lead">
             A little escape with a taste of the ranch — a relaxing, cozy
             indoor space to play, cuddle, and bond with adorable puppies.
+          </p>
+          <div class="hours-panel" data-hours="village" aria-label="Village hours"></div>
+        </div>
+      </section>
+
+      <section class="membership-gate" id="plans">
+        <div class="membership-gate__inner">
+          <p class="splash-tag">Select your membership</p>
+          <div class="splash-actions">
+            <button
+              class="btn btn-primary splash-btn"
+              type="button"
+              data-square-item="membership-weekly"
+              data-square-label="Join Weekly Member"
+              data-square-qty="false"
+            >
+              Weekly Member
+              <span>$60 / month · 30 min × 4</span>
+            </button>
+            <button
+              class="btn btn-secondary splash-btn"
+              type="button"
+              data-square-item="membership-family"
+              data-square-label="Join Family Package"
+              data-square-qty="false"
+            >
+              Family Package
+              <span>$150 / month · up to 4 people</span>
+            </button>
+          </div>
+          <p class="splash-foot membership-gate__note">
+            Village Puppy Room · auto-rollover · first month via Square
           </p>
         </div>
       </section>
@@ -170,10 +202,9 @@
             <article class="card">
               <h3>Sessions &amp; hours</h3>
               <p>
-                20 or 30 minutes of puppy time, ages 2+. Open
-                Monday&ndash;Thursday, 12:00 PM &ndash; 8:00 PM, plus Friday
-                &amp; Sunday sessions.
+                20 or 30 minutes of puppy time, ages 2+. Hours match The Ranch:
               </p>
+              <div data-hours="schedule" aria-label="Village hours"></div>
             </article>
             <article class="card">
               <h3>Indoor &amp; cozy</h3>
@@ -216,7 +247,7 @@
               <li><a href="showcase.html">Showcase</a></li>
               <li><a href="reviews.html">Reviews</a></li>
               <li><a href="testimonials.html">Testimonials</a></li>
-              <li><a href="membership.html">Membership</a></li>
+              <li><a href="village.html#plans">Membership</a></li>
               <li><a href="instagram.html">Instagram</a></li>
               <li><a href="blog.html">Blog</a></li>
               <li><a href="contact.html">Contact</a></li>
@@ -241,6 +272,7 @@
     <script src="square.config.js"></script>
     <script src="square-checkout.js"></script>
     <script src="nav.js"></script>
+    <script src="hours.js"></script>
     <script>
       document.getElementById("year").textContent = new Date().getFullYear();
     </script>

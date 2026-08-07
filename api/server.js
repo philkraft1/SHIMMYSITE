@@ -546,6 +546,12 @@ app.get("/api/config", (_req, res) => {
   });
 });
 
+function parseCheckoutQuantity(raw) {
+  const n = Number.parseInt(String(raw ?? 1), 10);
+  if (!Number.isFinite(n) || n < 1) return 1;
+  return Math.min(n, 20);
+}
+
 app.post("/api/checkout/:itemId", async (req, res) => {
   const item = getCatalogItem(req.params.itemId);
   if (!item) {
@@ -559,18 +565,25 @@ app.post("/api/checkout/:itemId", async (req, res) => {
     });
   }
 
+  const quantity = parseCheckoutQuantity(req.body?.quantity);
   const checkoutOptions = redirectUrl
     ? { redirectUrl, askForShippingAddress: false }
     : { askForShippingAddress: false };
 
+  // ASCII-only line names so Square checkout never shows encoding mojibake.
+  const lineName =
+    quantity > 1 ? `${item.name} x ${quantity}` : item.name;
+
   try {
+    // Quick Pay has no quantity field — charge unit price x qty and label
+    // the line so Square checkout / receipts show how many were purchased.
     const response = await client.checkout.paymentLinks.create({
       idempotencyKey: crypto.randomUUID(),
-      description: item.name,
+      description: lineName,
       quickPay: {
-        name: item.name,
+        name: lineName,
         priceMoney: {
-          amount: BigInt(item.amountCents),
+          amount: BigInt(item.amountCents * quantity),
           currency: "USD",
         },
         locationId,
@@ -585,6 +598,7 @@ app.post("/api/checkout/:itemId", async (req, res) => {
 
     return res.json({
       url,
+      quantity,
       paymentLinkId: response.paymentLink?.id || null,
       orderId: response.paymentLink?.orderId || null,
     });
